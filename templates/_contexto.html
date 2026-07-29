@@ -1,0 +1,52 @@
+{# ─────────────────────────────────────────────────────────
+   Inclua este partial no topo de cada etapa com:
+   {% include '_contexto.html' %}
+
+   Requer que a rota passe: oc, ctx (dict com campos da OC)
+───────────────────────────────────────────────────────── #}
+
+<div style="
+    background: #1c2434;
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+">
+
+    <div style="border-right: 1px solid rgba(255,255,255,.15);
+                padding-right: 20px; flex-shrink:0;">
+        <div style="font-size:11px; opacity:.5; text-transform:uppercase;
+                    letter-spacing:.8px; color:white;">OC</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:18px;
+                    font-weight:700; color:white; line-height:1.2;">
+            {{ oc.numero_oc }}
+        </div>
+    </div>
+
+    {% set itens = [
+        ('Cliente',        ctx.cliente),
+        ('Produto',        ctx.produto),
+        ('Transportadora', ctx.transportadora),
+        ('Motorista',      ctx.motorista),
+        ('Placa Carreta',  ctx.placa_carreta),
+        ('Placa Cavalo',   ctx.placa_cavalo),
+    ] %}
+
+    {% for label, valor in itens %}
+    {% if valor and valor != '—' %}
+    <div>
+        <div style="font-size:10px; opacity:.5; text-transform:uppercase;
+                    letter-spacing:.7px; color:white; margin-bottom:2px;">
+            {{ label }}
+        </div>
+        <div style="font-size:13px; font-weight:600; color:white;">
+            {{ valor }}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+</div>

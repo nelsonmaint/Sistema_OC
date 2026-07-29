@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 030 — LCQ INICIAL</h2>
+    <hr>
+    {% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-warning">{{ mensagem }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Número do Tanque</label>
+            <input type="text" name="tanque" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Aprovação</label>
+            <select name="aprovacao" class="form-control" required>
+                <option value="">Selecione</option>
+                <option value="SIM">SIM</option>
+                <option value="NAO">NÃO</option>
+                <option value="NA">N/A</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+{% endblock %}

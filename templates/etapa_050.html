@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 050 — LIBERAÇÃO DE ENTRADA</h2>
+    <hr>
+    {% include '_contexto.html' %}
+
+    <h5 class="mb-3">Resumo da OC</h5>
+    <ul class="list-group mb-4" style="max-width:500px;">
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Lote</span>
+            <strong>{{ dados.get('numero_lote', '—') }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Motorista</span>
+            <strong>{{ dados.get('motorista_nome', '—') }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Placa Carreta</span>
+            <strong>{{ dados.get('placa_carreta', '—') }}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Placa Cavalo</span>
+            <strong>{{ dados.get('placa_cavalo', '—') }}</strong>
+        </li>
+    </ul>
+
+    <form method="POST">
+        <button type="submit" class="btn btn-success btn-lg">
+            ✔ ENTRADA LIBERADA
+        </button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 080 — EXPEDIÇÃO DO PRODUTO</h2>
+    <p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+    <hr>
+{% include '_contexto.html' %}
+
+    <form method="POST" enctype="multipart/form-data" id="form080">
+
+        <!-- ════════════════════════════════════════ -->
+        <!-- BLOCO 1 — ANTES DO CARREGAMENTO         -->
+        <!-- ════════════════════════════════════════ -->
+        <div id="bloco1">
+
+            <h4 class="text-primary mb-3">ANTES DO CARREGAMENTO</h4>
+
+            {% set perguntas_antes = [
+                ('tanque_adequado',    'O TANQUE DO VEÍCULO ENCONTRA-SE EM CONDIÇÕES ADEQUADAS PARA REALIZAÇÃO DO CARREGAMENTO?'),
+                ('tanque_limpo',       'O TANQUE ESTÁ LIMPO E VAZIO CONFORME VERIFICAÇÃO VISUAL?'),
+                ('parafusos_valvulas', 'OS PARAFUSOS, VÁLVULAS E TAMPA ESTÃO EM BOM ESTADO DE CONSERVAÇÃO E FUNCIONAMENTO?'),
+                ('junta_vedacao',      'A JUNTA DE VEDAÇÃO DA TAMPA ENCONTRA-SE ÍNTEGRA E EM BOM ESTADO DE CONSERVAÇÃO?'),
+                ('valvula_suspiro',    'A VÁLVULA DO SUSPIRO ENCONTRA-SE DEVIDAMENTE FECHADA?')
+            ] %}
+
+            {% for name, label in perguntas_antes %}
+            <div class="mb-3">
+                <label class="form-label">{{ label }}</label>
+                <select name="{{ name }}" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option>SIM</option><option>NÃO</option><option>N/A</option>
+                </select>
+            </div>
+            {% endfor %}
+
+            <div class="mb-3">
+                <label class="form-label">
+                    ANEXE A IMAGEM REFERENTE À PARTE SUPERIOR DO VEÍCULO
+                    <small class="text-muted">(Domo, flange, válvulas)</small>
+                </label>
+                <input type="file" name="img_parte_superior" class="form-control"
+                       accept="image/*" required>
+            </div>
+
+            <!-- ── Consenso ANTES — select com data-no-convert ── -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Há necessidade de consenso do supervisor?</label>
+
+                <!-- data-no-convert="true" impede conversão para botões -->
+                <select name="_consenso_antes_ctrl" id="consenso_antes_sel"
+                        class="form-control" data-no-convert="true"
+                        onchange="toggleConsenso('consenso_antes_sel', 'bloco_ass_sup_antes')">
+                    <option value="NAO">NÃO</option>
+                    <option value="SIM">SIM</option>
+                </select>
+            </div>
+
+            <div id="bloco_ass_sup_antes" style="display:none;" class="mb-4 p-3"
+                 style="background:#f8fafc; border-radius:10px;">
+                <label class="form-label fw-bold">ASSINATURA DO SUPERVISOR</label><br>
+                <canvas id="canvas_sup_antes" width="450" height="150"
+                        style="border:1px solid #000; border-radius:6px; cursor:crosshair;"></canvas>
+                <input type="hidden" name="assinatura_supervisor_antes" id="assinatura_supervisor_antes">
+                <br>
+                <button type="button" class="btn btn-warning btn-sm mt-2"
+                        onclick="limparCanvas('canvas_sup_antes')">Limpar</button>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="avancarBloco(1, 2)">
+                Próximo →
+            </button>
+        </div>
+
+        <!-- ════════════════════════════════════════ -->
+        <!-- BLOCO 2 — APÓS O CARREGAMENTO           -->
+        <!-- ════════════════════════════════════════ -->
+        <div id="bloco2" style="display:none;">
+
+            <h4 class="text-primary mb-3">APÓS O CARREGAMENTO</h4>
+
+            {% set perguntas_depois = [
+                ('nivel_alinhado',  'O NÍVEL DE ENCHIMENTO DO CAMINHÃO ESTÁ ALINHADO COM A SETA INDICADORA?'),
+                ('regua_utilizada', 'FOI UTILIZADO A RÉGUA PARA VERIFICAÇÃO DO NÍVEL DE ENCHIMENTO?'),
+            ] %}
+
+            {% for name, label in perguntas_depois %}
+            <div class="mb-3">
+                <label class="form-label">{{ label }}</label>
+                <select name="{{ name }}" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option>SIM</option><option>NÃO</option><option>N/A</option>
+                </select>
+            </div>
+            {% endfor %}
+
+            <div class="mb-3">
+                <label class="form-label">ANEXE A IMAGEM DO NÍVEL DE ENCHIMENTO</label>
+                <input type="file" name="img_nivel" class="form-control" accept="image/*" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">A VÁLVULA DO DOMO FOI FECHADA MANUALMENTE OU COM TORQUÍMETRO?</label>
+                <select name="fechamento_domo" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option value="Manualmente">Manualmente</option>
+                    <option value="Torquímetro">Torquímetro</option>
+                </select>
+            </div>
+
+            {% set perguntas_depois2 = [
+                ('domo_limpo',            'O DOMO ENCONTRA-SE LIMPO E LIVRE DE RESÍDUOS?'),
+                ('lacres_ok',             'OS LACRES ESTÃO INSTALADOS CORRETAMENTE, CONFORME A AUTORIZAÇÃO DE CARREGAMENTO?'),
+                ('mangueira_conectada',   'A MANGUEIRA DE DESCARTE DO DOMO ESTÁ CORRETAMENTE CONECTADA AO RESERVATÓRIO DE DRENAGEM DE EFLUENTES?'),
+                ('reservatorio_vazio',    'O RESERVATÓRIO DE DRENAGEM DE EFLUENTES ENCONTRA-SE VAZIO, PERMITINDO A DRENAGEM QUANDO NECESSÁRIO?'),
+            ] %}
+
+            {% for name, label in perguntas_depois2 %}
+            <div class="mb-3">
+                <label class="form-label">{{ label }}</label>
+                <select name="{{ name }}" class="form-control" required>
+                    <option value="">Selecione</option>
+                    <option>SIM</option><option>NÃO</option><option>N/A</option>
+                </select>
+            </div>
+            {% endfor %}
+
+            <div class="mb-3">
+                <label class="form-label">ANEXE A IMAGEM DO DOMO</label>
+                <input type="file" name="img_domo" class="form-control" accept="image/*" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">ANEXE AS IMAGENS DOS LACRES (INFERIOR E SUPERIOR)</label>
+                <input type="file" name="img_lacres" class="form-control"
+                       accept="image/*" multiple required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">ANEXE A IMAGEM DA MANGUEIRA E DO RESERVATÓRIO</label>
+                <input type="file" name="img_mangueira_reservatorio" class="form-control"
+                       accept="image/*" multiple required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">NÚMERO DA AMOSTRA</label>
+                <input type="text" name="numero_amostra" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Nº DO LACRE</label>
+                <input type="text" name="numero_lacre" class="form-control" required>
+            </div>
+
+            <!-- Assinatura do Operador -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">ASSINATURA DO OPERADOR</label><br>
+                <canvas id="canvas_operador" width="450" height="150"
+                        style="border:1px solid #000; border-radius:6px; cursor:crosshair;"></canvas>
+                <input type="hidden" name="assinatura_operador" id="assinatura_operador">
+                <br>
+                <button type="button" class="btn btn-warning btn-sm mt-2"
+                        onclick="limparCanvas('canvas_operador')">Limpar</button>
+            </div>
+
+            <!-- ── Consenso DEPOIS — select com data-no-convert ── -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">Há necessidade de consenso do supervisor?</label>
+
+                <select name="_consenso_depois_ctrl" id="consenso_depois_sel"
+                        class="form-control" data-no-convert="true"
+                        onchange="toggleConsenso('consenso_depois_sel', 'bloco_ass_sup_depois')">
+                    <option value="NAO">NÃO</option>
+                    <option value="SIM">SIM</option>
+                </select>
+            </div>
+
+            <div id="bloco_ass_sup_depois" style="display:none;" class="mb-4 p-3"
+                 style="background:#f8fafc; border-radius:10px;">
+                <label class="form-label fw-bold">ASSINATURA DO SUPERVISOR</label><br>
+                <canvas id="canvas_sup_depois" width="450" height="150"
+                        style="border:1px solid #000; border-radius:6px; cursor:crosshair;"></canvas>
+                <input type="hidden" name="assinatura_supervisor_depois" id="assinatura_supervisor_depois">
+                <br>
+                <button type="button" class="btn btn-warning btn-sm mt-2"
+                        onclick="limparCanvas('canvas_sup_depois')">Limpar</button>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-secondary" onclick="avancarBloco(2, 1)">
+                    ← Voltar
+                </button>
+                <button type="submit" class="btn btn-success" onclick="return finalizar080()">
+                    Salvar e Finalizar
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+/* ── Canvas ── */
+function prepararCanvas(id) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
+    let desenhando = false;
+
+    canvas.addEventListener('mousedown', e => { desenhando = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if (!desenhando) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+    canvas.addEventListener('mouseup',    () => desenhando = false);
+    canvas.addEventListener('mouseleave', () => desenhando = false);
+
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault(); const t = e.touches[0]; const r = canvas.getBoundingClientRect();
+        desenhando = true; ctx.beginPath(); ctx.moveTo(t.clientX-r.left, t.clientY-r.top);
+    }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+        e.preventDefault(); if (!desenhando) return;
+        const t = e.touches[0]; const r = canvas.getBoundingClientRect();
+        ctx.lineTo(t.clientX-r.left, t.clientY-r.top); ctx.stroke();
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => desenhando = false);
+}
+
+function limparCanvas(id) {
+    const c = document.getElementById(id);
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+function canvasVazio(canvas) {
+    const data = canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+    for (let i = 3; i < data.length; i += 4) { if (data[i] > 0) return false; }
+    return true;
+}
+
+/* ── Toggle do consenso ── */
+function toggleConsenso(selId, blocoId) {
+    const val   = document.getElementById(selId).value;
+    const bloco = document.getElementById(blocoId);
+    bloco.style.display = val === 'SIM' ? 'block' : 'none';
+}
+
+/* ── Navegação entre blocos ── */
+function avancarBloco(atual, proximo) {
+    const bloco  = document.getElementById('bloco' + atual);
+    const campos = bloco.querySelectorAll('input[required], select[required]');
+    for (const c of campos) {
+        if (c.style.display === 'none') continue;
+        if (!c.value.trim()) {
+            alert('Preencha todos os campos obrigatórios antes de avançar.');
+            c.focus(); return;
+        }
+    }
+    /* Verificar radio groups obrigatórios */
+    const radioGroups = {};
+    bloco.querySelectorAll('input[type=radio][required]').forEach(r => {
+        radioGroups[r.name] = radioGroups[r.name] || false;
+        if (r.checked) radioGroups[r.name] = true;
+    });
+    for (const [name, ok] of Object.entries(radioGroups)) {
+        if (!ok) { alert('Responda todas as perguntas antes de avançar.'); return; }
+    }
+    document.getElementById('bloco1').style.display = 'none';
+    document.getElementById('bloco2').style.display = 'none';
+    document.getElementById('bloco' + proximo).style.display = 'block';
+    window.scrollTo(0, 0);
+}
+
+/* ── Finalizar ── */
+function finalizar080() {
+    /* Capturar assinaturas */
+    ['canvas_sup_antes', 'canvas_operador', 'canvas_sup_depois'].forEach(cId => {
+        const canvas = document.getElementById(cId);
+        const iId    = 'assinatura_' + cId.replace('canvas_', '');
+        const inp    = document.getElementById(iId);
+        if (inp && canvas) inp.value = canvas.toDataURL();
+    });
+
+    /* Assinatura do operador obrigatória */
+    if (canvasVazio(document.getElementById('canvas_operador'))) {
+        alert('A assinatura do operador é obrigatória.');
+        return false;
+    }
+
+    /* Se consenso antes = SIM, exigir assinatura */
+    if (document.getElementById('consenso_antes_sel').value === 'SIM') {
+        if (canvasVazio(document.getElementById('canvas_sup_antes'))) {
+            alert('A assinatura do supervisor (antes) é obrigatória.');
+            return false;
+        }
+    }
+
+    /* Se consenso depois = SIM, exigir assinatura */
+    if (document.getElementById('consenso_depois_sel').value === 'SIM') {
+        if (canvasVazio(document.getElementById('canvas_sup_depois'))) {
+            alert('A assinatura do supervisor (após) é obrigatória.');
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/* Inicializar canvas */
+prepararCanvas('canvas_sup_antes');
+prepararCanvas('canvas_operador');
+prepararCanvas('canvas_sup_depois');
+</script>
+
+{% endblock %}

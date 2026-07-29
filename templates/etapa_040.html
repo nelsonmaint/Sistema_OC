@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="mb-3">
+    <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+</div>
+<h2 class="mb-1">ETAPA 040 - CHECK-IN PORTARIA</h2>
+<p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+<hr>
+
+<form method="POST" id="form040">
+
+<!-- ================================================= -->
+<!-- 040-01 MOTORISTA -->
+<!-- ================================================= -->
+
+<div id="passo1">
+
+<h4 class="mb-3 text-primary">040-01 | Dados do Motorista</h4>
+
+<div class="mb-3">
+<label>Nome do Motorista</label>
+<input type="text" name="motorista_nome" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Cliente</label>
+<select name="cliente" class="form-control" required>
+<option value="">Selecione</option>
+<option>ALPEK POLYESTER</option>
+<option>AMBEV - ESTÂNCIA - SE</option>
+<option>AMBEV - ITAPISSUMA - PE</option>
+<option>AMBEV - SÃO LUÍS - MA</option>
+<option>AMBEV - TERESINA - PI</option>
+<option>AMBEV - AQUIRAZ - CE</option>
+<option>BRASKEM - MACEIO</option>
+<option>BRASKEM - MARECHAL</option>
+<option>BRILUX - CE</option>
+<option>BRILUX - PE</option>
+<option>CAPE MARECHAL</option>
+<option>COMPESA - PIRAPAMA</option>
+<option>COMPESA - TAPACURÁ</option>
+<option>COMPESA INDUSTRIALIZAÇÃO</option>
+<option>FAG</option>
+<option>GERDAU</option>
+<option>HEINEKEN (IGARASSU)</option>
+<option>HEINEKEN (PACATUBA)</option>
+<option>INGREDION</option>
+<option>INTERLÂNDIA - AL</option>
+<option>INTERLÂNDIA - CE</option>
+<option>INTERLÂNDIA - PE</option>
+<option>MUSASHI</option>
+<option>NATURA</option>
+<option>PERNAMBUCO QUIMICA</option>
+<option>PQA</option>
+<option>QUIMICA AMPARO - PE</option>
+<option>QUIMICA DA MATA</option>
+<option>SABARÁ - PE</option>
+<option>UNIL</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>Transportadora</label>
+<select name="transportadora" class="form-control" required>
+<option value="">Selecione</option>
+<option>A5LOG</option>
+<option>ARL LIMA</option>
+<option>ALQUIMIA</option>
+<option>BAUMINAS</option>
+<option>CLORONORTE</option>
+<option>COOPERCELL</option>
+<option>COOPERTRANS</option>
+<option>DA FONTE</option>
+<option>EXPRESSO</option>
+<option>EJG TRANSPORTES</option>
+<option>FORT LOG TRANSPORTES</option>
+<option>GB TRANSPORTES</option>
+<option>INTERLANDIA</option>
+<option>ISOMAR</option>
+<option>JANGA</option>
+<option>JOSE HERCULANO</option>
+<option>LIQUID</option>
+<option>MERCOTRANS</option>
+<option>MK QUIMICA</option>
+<option>RECASS</option>
+<option>RENER</option>
+<option>RHOFER</option>
+<option>SATELOG</option>
+<option>SEDA</option>
+<option>SIDREN</option>
+<option>SYMBOLUMS</option>
+<option>TALMAR</option>
+<option>TRANSMOG</option>
+<option>TRELSA</option>
+<option>TUFÃO</option>
+<option>ULTRALOG</option>
+<option>UNIQUIMICA</option>
+<option>81 TRANSPORTES</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>Produto</label>
+<select name="produto" class="form-control" required>
+<option value="">Selecione</option>
+<option>CLORO</option>
+<option>SODA CÁUSTICA</option>
+<option>ÁCIDO CLORÍDRICO</option>
+<option>HIPOCLORITO ATC</option>
+<option>HIPOCLORITO BTC</option>
+<option>ÁCIDO SULFÚRICO</option>
+<option>MADEIRA</option>
+<option>RESÍDUOS</option>
+<option>OUTROS</option>
+</select>
+</div>
+
+<div class="row">
+<div class="col-md-6 mb-3">
+<label>Placa Carreta</label>
+<input type="text" name="placa_carreta" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Placa Cavalo</label>
+<input type="text" name="placa_cavalo" class="form-control" required>
+</div>
+</div>
+
+<div class="mb-3">
+<label>Aspecto físico adequado?</label>
+<select name="aspecto_fisico" class="form-control" required>
+<option value="">Selecione</option>
+<option>SIM</option>
+<option>NÃO</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>EPI's adequados?</label>
+<select name="epis_ok" class="form-control" required>
+<option value="">Selecione</option>
+<option>SIM</option>
+<option>NÃO</option>
+</select>
+</div>
+
+<button type="button" class="btn btn-primary" onclick="proximo(2)">
+Próximo
+</button>
+
+</div>
+
+<!-- ================================================= -->
+<!-- 040-02 DOCUMENTAÇÃO -->
+<!-- ================================================= -->
+
+<div id="passo2" style="display:none;">
+
+<h4 class="mb-3 text-primary">040-02 | Documentação</h4>
+
+<div class="mb-3">
+<label>Curso MOPE válido?</label>
+<select name="mope" class="form-control" required>
+<option value="">Selecione</option>
+<option>SIM</option>
+<option>NÃO</option>
+<option>N/A</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>CIV Carreta</label>
+<input type="date" name="civ_carreta" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>CIV Cavalo</label>
+<input type="date" name="civ_cavalo" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>CIPP</label>
+<input type="date" name="cipp" class="form-control" required>
+</div>
+
+<div class="mb-3">
+<label>Check-in documental</label>
+<select name="checkin_doc" class="form-control" required>
+<option value="">Selecione</option>
+<option>SIM</option>
+<option>NÃO</option>
+<option>N/A</option>
+</select>
+</div>
+
+<button type="button" class="btn btn-secondary" onclick="proximo(1)">
+Voltar
+</button>
+
+<button type="button" class="btn btn-primary" onclick="proximo(3)">
+Próximo
+</button>
+
+</div>
+
+<!-- ================================================= -->
+<!-- 040-03 ASSINATURAS -->
+<!-- ================================================= -->
+
+<div id="passo3" style="display:none;">
+
+<h4 class="mb-3 text-primary">040-03 | Assinaturas</h4>
+
+<div class="mb-3">
+<label>Assinatura do Motorista</label><br>
+<canvas id="canvas1" width="450" height="160"
+style="border:1px solid #000;"></canvas>
+
+<input type="hidden" name="assinatura_motorista" id="assinatura_motorista">
+
+<br>
+<button type="button" class="btn btn-warning btn-sm mt-2"
+onclick="limparCanvas('canvas1')">
+Limpar
+</button>
+</div>
+
+<hr>
+
+<div class="mb-3">
+<label>Assinatura do Faturamento</label><br>
+<canvas id="canvas2" width="450" height="160"
+style="border:1px solid #000;"></canvas>
+
+<input type="hidden" name="assinatura_faturamento" id="assinatura_faturamento">
+
+<br>
+<button type="button" class="btn btn-warning btn-sm mt-2"
+onclick="limparCanvas('canvas2')">
+Limpar
+</button>
+</div>
+
+<button type="button" class="btn btn-secondary" onclick="proximo(2)">
+Voltar
+</button>
+
+<button type="submit" class="btn btn-success"
+onclick="return validarFinal()">
+Salvar e Finalizar
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+function prepararCanvas(id){
+
+    let canvas = document.getElementById(id);
+    let ctx = canvas.getContext('2d');
+    let desenhando = false;
+
+    canvas.onmousedown = function(e){
+        desenhando = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+    };
+
+    canvas.onmousemove = function(e){
+        if(desenhando){
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+        }
+    };
+
+    canvas.onmouseup = function(){
+        desenhando = false;
+    };
+
+    canvas.onmouseleave = function(){
+        desenhando = false;
+    };
+}
+
+function limparCanvas(id){
+
+    let canvas = document.getElementById(id);
+    let ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function salvarAssinaturas(){
+
+    document.getElementById('assinatura_motorista').value =
+        document.getElementById('canvas1').toDataURL();
+
+    document.getElementById('assinatura_faturamento').value =
+        document.getElementById('canvas2').toDataURL();
+}
+
+function proximo(num){
+
+    let atual = document.querySelector(
+        '#passo1:not([style*="none"]), #passo2:not([style*="none"]), #passo3:not([style*="none"])'
+    );
+
+    let campos = atual.querySelectorAll('input, select');
+
+    for(let campo of campos){
+
+        if(campo.hasAttribute('required') && campo.value.trim() === ''){
+
+            alert('Preencha todos os campos obrigatórios antes de avançar.');
+            campo.focus();
+            return;
+        }
+    }
+
+    document.getElementById('passo1').style.display = 'none';
+    document.getElementById('passo2').style.display = 'none';
+    document.getElementById('passo3').style.display = 'none';
+
+    document.getElementById('passo' + num).style.display = 'block';
+}
+
+function validarFinal(){
+
+    salvarAssinaturas();
+
+    let assinatura1 =
+        document.getElementById('assinatura_motorista').value;
+
+    let assinatura2 =
+        document.getElementById('assinatura_faturamento').value;
+
+    if(!assinatura1 || !assinatura2){
+
+        alert('As duas assinaturas são obrigatórias.');
+        return false;
+    }
+
+    return true;
+}
+
+prepararCanvas('canvas1');
+prepararCanvas('canvas2');
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 100 — CHECK-OUT</h2>
+    <p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+    <hr>
+{% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-danger">{{ mensagem }}</div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" id="form100">
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">A VÁLVULA ENCONTRA-SE FECHADA E LACRADA SEM VAZAMENTO?</label>
+            <select name="valvula_fechada" class="form-control" required>
+                <option value="">Selecione</option>
+                <option>SIM</option>
+                <option>NÃO</option>
+                <option>N/A</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">REGISTRE FOTO DA VÁLVULA FECHADA E LACRADA</label>
+            <input type="file" name="img_valvula" class="form-control"
+                   accept="image/*" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">ASSINATURA DO VIGILANTE</label><br>
+            <canvas id="canvas_vigilante" width="450" height="150"
+                    style="border:1px solid #000;border-radius:6px;"></canvas>
+            <input type="hidden" name="assinatura_vigilante" id="assinatura_vigilante">
+            <br>
+            <button type="button" class="btn btn-warning btn-sm mt-2"
+                    onclick="limparCanvas('canvas_vigilante')">Limpar</button>
+        </div>
+
+        <button type="submit" class="btn btn-success"
+                onclick="return finalizar100()">
+            Salvar e Finalizar
+        </button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+
+    </form>
+</div>
+
+<script>
+function prepararCanvas(id) {
+    let canvas = document.getElementById(id);
+    let ctx = canvas.getContext('2d');
+    let desenhando = false;
+    canvas.onmousedown = e => { desenhando = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); };
+    canvas.onmousemove = e => { if (desenhando) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); } };
+    canvas.onmouseup   = () => desenhando = false;
+    canvas.onmouseleave = () => desenhando = false;
+    canvas.ontouchstart = e => {
+        e.preventDefault(); let t = e.touches[0]; let r = canvas.getBoundingClientRect();
+        desenhando = true; ctx.beginPath(); ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+    };
+    canvas.ontouchmove = e => {
+        e.preventDefault(); if (!desenhando) return;
+        let t = e.touches[0]; let r = canvas.getBoundingClientRect();
+        ctx.lineTo(t.clientX - r.left, t.clientY - r.top); ctx.stroke();
+    };
+    canvas.ontouchend = () => desenhando = false;
+}
+
+function limparCanvas(id) {
+    let c = document.getElementById(id);
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+function finalizar100() {
+    let canvas = document.getElementById('canvas_vigilante');
+    let input  = document.getElementById('assinatura_vigilante');
+    input.value = canvas.toDataURL();
+    if (!input.value) {
+        alert('A assinatura do vigilante é obrigatória.');
+        return false;
+    }
+    return true;
+}
+
+prepararCanvas('canvas_vigilante');
+</script>
+
+{% endblock %}

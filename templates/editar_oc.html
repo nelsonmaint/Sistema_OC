@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    <h2 class="mb-0">Editar {{ oc.numero_oc }}</h2>
+</div>
+
+<div class="alert alert-warning">
+    ⚠️ Você está editando os dados básicos desta OC. As etapas já preenchidas
+    não serão alteradas.
+</div>
+
+<form method="POST" style="max-width: 600px;">
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Pedido de Venda</label>
+        <input type="text" name="pedido_de_venda" class="form-control"
+               value="{{ vals.pedido_de_venda }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Tipo de Frete</label>
+        <select name="tipo_de_frete" class="form-control">
+            <option value="CIF" {{ 'selected' if vals.tipo_de_frete == 'CIF' }}>CIF</option>
+            <option value="FOB" {{ 'selected' if vals.tipo_de_frete == 'FOB' }}>FOB</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Cliente</label>
+        <input type="text" name="cliente" class="form-control"
+               value="{{ vals.cliente }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Código do Produto</label>
+        <input type="text" name="codigo_produto" class="form-control"
+               value="{{ vals.codigo_produto }}">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Produto</label>
+        <input type="text" name="produto" class="form-control"
+               value="{{ vals.produto }}" required>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">Transportadora</label>
+        <input type="text" name="transportadora" class="form-control"
+               value="{{ vals.transportadora }}">
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+
+</form>
+
+{% endblock %}

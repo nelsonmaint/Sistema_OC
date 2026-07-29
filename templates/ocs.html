@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h2 class="mb-0">Ordens de Carregamento</h2>
+        <small class="text-muted" id="total_label">{{ lista | length }} OC(s) registrada(s)</small>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/dashboard" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+        <a href="/oc/nova" class="btn btn-primary">+ Nova OC</a>
+    </div>
+</div>
+
+<!-- Filtros rápidos -->
+<div class="d-flex gap-2 mb-4 flex-wrap">
+    <button class="btn btn-sm btn-outline-secondary filtro-btn active" data-filtro="todos">
+        Todos
+    </button>
+    <button class="btn btn-sm btn-outline-warning filtro-btn" data-filtro="em_andamento">
+        Em Andamento
+    </button>
+    <button class="btn btn-sm btn-outline-success filtro-btn" data-filtro="concluida">
+        Concluídas
+    </button>
+    {% if is_admin %}
+    <button class="btn btn-sm btn-outline-danger filtro-btn" data-filtro="excluida">
+        🗑 Excluídas
+    </button>
+    {% endif %}
+</div>
+
+<!-- OCs aguardando minha área -->
+{% set minha_lista = lista | selectattr('aguardando_minha_area') | list %}
+{% if minha_lista %}
+<div class="mb-2" style="font-size:12px; font-weight:700; text-transform:uppercase;
+     letter-spacing:.8px; color:#92400e;">
+    🔔 Aguardando sua área ({{ minha_lista | length }})
+</div>
+{% endif %}
+
+<!-- Lista de cards -->
+<div class="row g-3" id="lista-ocs">
+
+{% for item in lista %}
+<div class="col-12 card-oc"
+     data-status="{{ 'excluida' if item.oc.excluida else item.oc.status }}">
+    <div class="card border-0 shadow-sm" style="
+        border-radius: 12px; overflow: hidden;
+        opacity: {{ '0.6' if item.oc.excluida else '1' }};
+    ">
+        <div style="display:flex;">
+            <!-- Faixa lateral de cor -->
+            <div style="
+                width: 5px; flex-shrink: 0;
+                background: {% if item.oc.excluida %}#9ca3af
+                            {% elif item.oc.status == 'concluida' %}#16a34a
+                            {% elif item.aguardando_minha_area %}#f59e0b
+                            {% else %}#3b82f6{% endif %};
+            "></div>
+
+            <div class="card-body py-3 px-4 w-100">
+                <div class="row align-items-center g-2">
+
+                    <!-- Nº e Data -->
+                    <div class="col-md-2">
+                        <div class="fw-bold" style="font-size:17px; color:#1c2434;
+                             font-family:'IBM Plex Mono',monospace;">
+                            {{ item.oc.numero_oc }}
+                        </div>
+                        <div class="text-muted" style="font-size:12px;">
+                            {{ item.oc.data_criacao.strftime('%d/%m/%Y') }}<br>
+                            {{ item.oc.data_criacao.strftime('%H:%M') }}
+                        </div>
+                    </div>
+
+                    <!-- Criado por -->
+                    <div class="col-md-2">
+                        <div style="font-size:11px; text-transform:uppercase;
+                             letter-spacing:.8px; color:#9ca3af;">Criado por</div>
+                        <div style="font-size:14px; font-weight:600; color:#374151;">
+                            {{ item.criador }}
+                        </div>
+                    </div>
+
+                    <!-- Cliente / Produto -->
+                    <div class="col-md-3">
+                        <div style="font-size:11px; text-transform:uppercase;
+                             letter-spacing:.8px; color:#9ca3af;">Cliente / Produto</div>
+                        <div style="font-size:14px; font-weight:600; color:#374151;">
+                            {{ item.cliente }}
+                        </div>
+                        <div class="text-muted" style="font-size:12px;">
+                            {{ item.produto }}
+                        </div>
+                    </div>
+
+                    <!-- Etapa atual -->
+                    <div class="col-md-3">
+                        <div style="font-size:11px; text-transform:uppercase;
+                             letter-spacing:.8px; color:#9ca3af;">Etapa atual</div>
+                        {% if item.oc.excluida %}
+                            <span style="font-size:13px; color:#9ca3af;">
+                                🗑 Excluída em
+                                {{ item.oc.data_exclusao.strftime('%d/%m/%Y') if item.oc.data_exclusao else '—' }}
+                            </span>
+                            {% if item.oc.justificativa_exclusao %}
+                            <div style="font-size:11px; color:#9ca3af; font-style:italic;">
+                                "{{ item.oc.justificativa_exclusao }}"
+                            </div>
+                            {% endif %}
+                        {% elif item.oc.status == 'concluida' %}
+                            <span class="badge bg-success" style="font-size:13px;">✔ Concluída</span>
+                        {% else %}
+                            <div style="font-size:14px; font-weight:600; color:#1c2434;">
+                                {{ item.etapa_codigo }} — {{ item.etapa_nome }}
+                            </div>
+                            <div style="font-size:12px; color:#6b7280;">
+                                {{ item.etapa_area }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Status e ação -->
+                    <div class="col-md-2 text-md-end">
+                        {% if item.oc.excluida %}
+                            <span class="badge bg-secondary mb-1">Excluída</span>
+                        {% elif item.oc.status == 'concluida' %}
+                            <span class="badge bg-success mb-1">Concluída</span>
+                        {% elif item.aguardando_minha_area %}
+                            <span class="badge bg-warning text-dark mb-1">⚡ Aguardando você</span>
+                        {% else %}
+                            <span class="badge bg-primary mb-1">Em Andamento</span>
+                        {% endif %}
+                        <br>
+                        {% if item.checkin != 'concluido' and not item.oc.excluida and item.oc.status != 'concluida' %}
+                            <span class="badge mb-1" style="background:#fef3c7;color:#92400e;">
+                                ⏳ Sem check-in
+                            </span>
+                        {% endif %}
+                        <br>
+                        <a href="/oc/{{ item.oc.id }}"
+                           class="btn btn-sm btn-primary mt-1">Abrir →</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-12 text-center text-muted py-5">
+    <div style="font-size:48px;">📋</div>
+    <p class="mt-2">Nenhuma OC registrada ainda.</p>
+    <a href="/oc/nova" class="btn btn-primary">Criar primeira OC</a>
+</div>
+{% endfor %}
+
+</div>
+
+<div id="paginacao"></div>
+
+<div class="mt-4">
+    <a href="/dashboard" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<script>
+const PER_PAGE = 20;
+let paginaAtual = 1;
+let filtroAtual = 'todos';
+
+function aplicar() {
+    const todos = Array.from(document.querySelectorAll('.card-oc'));
+    const visiveis = todos.filter(card => {
+        const s = card.dataset.status;
+        {% if not is_admin %}if (s === 'excluida') return false;{% endif %}
+        return filtroAtual === 'todos' || s === filtroAtual;
+    });
+
+    const totalPag = Math.max(1, Math.ceil(visiveis.length / PER_PAGE));
+    if (paginaAtual > totalPag) paginaAtual = totalPag;
+
+    const ini = (paginaAtual - 1) * PER_PAGE;
+    const fim = ini + PER_PAGE;
+
+    todos.forEach(c => c.style.display = 'none');
+    visiveis.forEach((c, i) => c.style.display = (i >= ini && i < fim) ? 'block' : 'none');
+
+    document.getElementById('total_label').textContent =
+        visiveis.length + ' OC(s) registrada(s)';
+
+    const nav = document.getElementById('paginacao');
+    if (totalPag <= 1) { nav.innerHTML = ''; return; }
+
+    let html = '<div class="d-flex align-items-center gap-2 flex-wrap mt-3">';
+    html += `<small class="text-muted me-1">${visiveis.length} OCs — pág. ${paginaAtual}/${totalPag}</small>`;
+    html += `<button class="btn btn-sm btn-outline-secondary" onclick="ir(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹ Anterior</button>`;
+    for (let i = 1; i <= totalPag; i++) {
+        html += `<button class="btn btn-sm ${i===paginaAtual?'btn-primary':'btn-outline-secondary'}" onclick="ir(${i})">${i}</button>`;
+    }
+    html += `<button class="btn btn-sm btn-outline-secondary" onclick="ir(${paginaAtual+1})" ${paginaAtual===totalPag?'disabled':''}>Próxima ›</button>`;
+    html += '</div>';
+    nav.innerHTML = html;
+}
+
+function ir(p) { paginaAtual = p; aplicar(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+document.querySelectorAll('.filtro-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        filtroAtual = this.dataset.filtro;
+        paginaAtual = 1;
+        aplicar();
+    });
+});
+
+aplicar();
+</script>
+
+{% endblock %}

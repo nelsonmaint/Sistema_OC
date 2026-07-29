@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 120 — FATURAMENTO</h2>
+    <p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+    <hr>
+{% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-danger">{{ mensagem }}</div>
+    {% endif %}
+
+    <div class="alert alert-warning">
+        <strong>Atenção:</strong> Esta é a última etapa. Ao salvar, a OC será
+        marcada como <strong>concluída</strong>.
+    </div>
+
+    <form method="POST">
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Número da Nota Fiscal</label>
+            <input type="number" name="numero_nf" class="form-control"
+                   min="1" placeholder="Somente números" required>
+            <small class="text-muted">Digite apenas os números da NF-e.</small>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            ✔ Finalizar OC
+        </button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+
+    </form>
+</div>
+
+{% endblock %}

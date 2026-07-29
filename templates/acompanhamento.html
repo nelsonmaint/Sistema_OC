@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+.acomp-root { font-family: 'IBM Plex Sans', sans-serif; }
+
+.acomp-header {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 28px;
+    flex-wrap: wrap; gap: 12px;
+}
+.acomp-header h2 { font-size: 24px; font-weight: 700; color: #1c2434; margin: 0; }
+.acomp-header p  { font-size: 13px; color: #9ca3af; margin: 4px 0 0; }
+
+.live-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 12px; font-weight: 700; color: #16a34a; letter-spacing: .5px;
+}
+.live-dot {
+    width: 8px; height: 8px; background: #16a34a;
+    border-radius: 50%; animation: pulsar 1.4s infinite;
+}
+@keyframes pulsar {
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%    { opacity:.4; transform:scale(1.3); }
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+/* ── Card = <details> ── */
+.oc-card {
+    background: white; border-radius: 12px;
+    border: 2px solid #e9ecef; overflow: hidden;
+    transition: border-color .3s, box-shadow .3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.oc-card.estado-ok      { border-color: #e9ecef; }
+.oc-card.estado-atencao { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.15); }
+.oc-card.estado-critico { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+    animation: piscar 2s infinite; }
+@keyframes piscar {
+    0%,100%{ box-shadow:0 0 0 3px rgba(239,68,68,.15); }
+    50%    { box-shadow:0 0 0 6px rgba(239,68,68,.25); }
+}
+
+/* ── <summary> = cabeçalho compacto ── */
+.oc-card > summary {
+    list-style: none; /* remove seta nativa */
+    padding: 13px 16px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; user-select: none;
+    transition: background .15s;
+}
+.oc-card > summary::-webkit-details-marker { display: none; }
+.oc-card > summary:hover { background: #f8fafc; }
+
+/* Cabeçalho aberto */
+.oc-card[open] > summary               { background: #1c2434; }
+.oc-card[open] > summary .card-oc-num  { color: white; }
+.oc-card[open] > summary .card-total-time { color: white; }
+.oc-card[open] > summary .card-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+
+.card-oc-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px; font-weight: 700; color: #1c2434; flex-shrink: 0;
+}
+.card-status-badge {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: .3px; flex-shrink: 0;
+}
+.badge-ok      { background:#dcfce7; color:#16a34a; }
+.badge-atencao { background:#fef9c3; color:#ca8a04; }
+.badge-critico { background:#fee2e2; color:#dc2626; }
+.card-total-time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 20px; font-weight: 700; color: #1c2434;
+    margin-left: auto; letter-spacing: 1px;
+}
+.card-chevron {
+    font-size: 10px; color: #9ca3af;
+    transition: transform .2s, color .15s; flex-shrink: 0;
+}
+
+/* ── Corpo expansível ── */
+.card-details { border-top: 1px solid #f1f5f9; padding: 14px 16px; }
+
+/* ── Tempos de espera ── */
+.wait-section {
+    background: #f8fafc; border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 14px;
+    border: 1px solid #e9ecef;
+}
+.wait-section-title {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: #6b7280; margin-bottom: 8px;
+}
+.wait-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+    background: white; border: 1px solid #e9ecef;
+    transition: background .4s, border-color .4s;
+}
+.wait-row:last-child { margin-bottom: 0; }
+.wait-row-label { font-size: 12px; font-weight: 600; color: #374151; }
+.wait-row-sub   { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+.wait-row-time  {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px; font-weight: 700; color: #9ca3af;
+    flex-shrink: 0; margin-left: 8px;
+}
+.wait-row.ok      { border-color: #bbf7d0; background: #f0fdf4; }
+.wait-row.ok      .wait-row-time { color: #16a34a; }
+.wait-row.atencao { border-color: #fde68a; background: #fffbeb; }
+.wait-row.atencao .wait-row-time { color: #ca8a04; }
+.wait-row.critico { border-color: #fca5a5; background: #fef2f2; }
+.wait-row.critico .wait-row-time { color: #dc2626; }
+
+/* ── Info grid ── */
+.card-info-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px 14px; margin-bottom: 14px;
+}
+.info-label { font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: #9ca3af; margin-bottom: 2px; }
+.info-valor { font-size: 13px; font-weight: 600; color: #374151;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Etapa box ── */
+.etapa-box {
+    background: #f8fafc; border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 12px;
+    border-left: 3px solid #1c2434;
+}
+.etapa-box.atencao { border-left-color: #fbbf24; background: #fffbeb; }
+.etapa-box.critico { border-left-color: #ef4444; background: #fef2f2; }
+.etapa-label { font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .8px; color: #9ca3af; margin-bottom: 3px; }
+.etapa-nome  { font-size: 13px; font-weight: 700; color: #1c2434; }
+.etapa-area  { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+/* ── Cronos ── */
+.cronos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.crono-box {
+    background: #f8fafc; border-radius: 8px;
+    padding: 8px 10px; text-align: center;
+}
+.crono-box.crono-etapa            { background: #1c2434; }
+.crono-box.crono-etapa.atencao    { background: #ca8a04; }
+.crono-box.crono-etapa.critico    { background: #dc2626; }
+.crono-label { font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .7px; color: #9ca3af; margin-bottom: 3px; }
+.crono-box.crono-etapa .crono-label { color: rgba(255,255,255,.5); }
+.crono-valor { font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px; font-weight: 700; color: #1c2434; line-height: 1; }
+.crono-box.crono-etapa .crono-valor { color: white; }
+
+.meta-barra-wrap { margin-top: 8px; }
+.meta-info { display: flex; justify-content: space-between;
+    font-size: 11px; color: #9ca3af; margin-bottom: 3px; }
+.meta-barra-bg { height: 4px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+.meta-barra-fill { height: 100%; border-radius: 3px; transition: width .5s, background .5s; }
+
+.vazio { text-align: center; padding: 60px 20px;
+    color: #9ca3af; grid-column: 1 / -1; }
+.vazio-icon { font-size: 48px; margin-bottom: 12px; }
+</style>
+
+<div class="acomp-root">
+    <div class="acomp-header">
+        <div>
+            <h2>Painel de Ordens de Carregamento</h2>
+            <p id="contagem_ocs">Carregando OCs em aberto...</p>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div class="live-badge"><div class="live-dot"></div> AO VIVO</div>
+            <a href="/oc/nova" class="btn btn-primary btn-sm">+ Nova OC</a>
+        </div>
+    </div>
+
+    <div class="cards-grid" id="cards_grid"></div>
+</div>
+
+<script>
+const OCS_DATA   = {{ ocs_json | safe }};
+const TEMPO_META = {{ meta_json | safe }};
+
+function formatarTempo(s) {
+    if (s < 0) s = 0;
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), seg = s%60;
+    if (h > 0) return `${pad(h)}:${pad(m)}:${pad(seg)}`;
+    return `${pad(m)}:${pad(seg)}`;
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function agora() { return Math.floor(Date.now()/1000); }
+
+function estadoEtapa(segsEtapa, metaMin) {
+    if (!metaMin) return 'ok';
+    const pct = segsEtapa / (metaMin * 60);
+    if (pct >= 1.0)  return 'critico';
+    if (pct >= 0.75) return 'atencao';
+    return 'ok';
+}
+
+function estadoEspera(mins) {
+    if (mins >= 60) return 'critico';
+    if (mins >= 30) return 'atencao';
+    return 'ok';
+}
+
+function waitRow(rowId, label, sub, fromTs) {
+    if (fromTs === null) {
+        return `<div class="wait-row">
+            <div><div class="wait-row-label" style="color:#9ca3af;">${label}</div></div>
+            <div class="wait-row-time">—</div></div>`;
+    }
+    return `<div class="wait-row" id="${rowId}">
+        <div>
+            <div class="wait-row-label">${label}</div>
+            <div class="wait-row-sub">${sub}</div>
+        </div>
+        <div class="wait-row-time" id="${rowId}_time">00:00</div></div>`;
+}
+
+function construirCards() {
+    const grid     = document.getElementById('cards_grid');
+    grid.innerHTML = '';
+    const contagem = document.getElementById('contagem_ocs');
+
+    if (!OCS_DATA.length) {
+        contagem.textContent = 'Nenhuma OC em aberto no momento.';
+        grid.innerHTML = `<div class="vazio">
+            <div class="vazio-icon">✅</div>
+            <p>Todas as OCs foram concluídas!</p></div>`;
+        return;
+    }
+
+    contagem.textContent = `${OCS_DATA.length} OC${OCS_DATA.length>1?'s':''} em aberto`;
+
+    OCS_DATA.forEach(oc => {
+        const metaMin = TEMPO_META[oc.etapa_codigo] || null;
+
+        /* Linha de check-in */
+        let checkinHtml = '';
+        if (oc.checkin_ts === null) {
+            checkinHtml = `<div style="background:#fef3c7;border-left:3px solid #f59e0b;
+                border-radius:8px;padding:7px 10px;margin-bottom:10px;
+                font-size:11px;color:#92400e;font-weight:600;">
+                ⏳ Check-in não realizado</div>`;
+        } else if (oc.checkin_espera_fixa === null) {
+            checkinHtml = `<div id="checkin_box_${oc.id}" style="background:#eff6ff;
+                border-left:3px solid #3b82f6;border-radius:8px;padding:7px 10px;
+                margin-bottom:10px;font-size:11px;">
+                <span style="color:#1d4ed8;font-weight:700;">✔ Check-in OK</span>
+                <span style="color:#6b7280;"> — Aguardando entrada: </span>
+                <span id="checkin_timer_${oc.id}" style="font-family:'IBM Plex Mono',monospace;
+                    font-weight:700;color:#1d4ed8;">00:00</span></div>`;
+        }
+
+        const w1Sub = oc.w1_to_ts !== null ? '✔ Concluído' : '● Ao vivo';
+        const w2Sub = oc.w2_to_ts !== null ? '✔ Concluído' : '● Ao vivo';
+
+        /* <details> = card. <summary> = cabeçalho compacto. Resto = corpo. */
+        const card = document.createElement('details');
+        card.className = 'oc-card estado-ok';
+        card.id = `card_${oc.id}`;
+
+        card.innerHTML = `
+        <summary>
+            <span class="card-oc-num">${oc.numero_oc}</span>
+            <span class="card-status-badge badge-ok" id="badge_${oc.id}">No prazo</span>
+            <span class="card-total-time" id="crono_total_${oc.id}">00:00</span>
+            <span class="card-chevron">▼</span>
+        </summary>
+
+        <div class="card-details">
+            <div class="wait-section">
+                <div class="wait-section-title">⏱ Tempos de Espera</div>
+                ${waitRow(`w1_${oc.id}`, '🚛 Check-in → Checklist de Entrada', w1Sub, oc.w1_from_ts)}
+                ${waitRow(`w2_${oc.id}`, '📦 Checklist Entrada → Carregamento', w2Sub, oc.w2_from_ts)}
+            </div>
+
+            <div class="card-info-grid">
+                <div><div class="info-label">Cliente</div>
+                     <div class="info-valor" title="${oc.cliente}">${oc.cliente}</div></div>
+                <div><div class="info-label">Produto</div>
+                     <div class="info-valor">${oc.produto}</div></div>
+                <div><div class="info-label">Transportadora</div>
+                     <div class="info-valor" title="${oc.transportadora}">${oc.transportadora}</div></div>
+                <div><div class="info-label">Placa Carreta</div>
+                     <div class="info-valor">${oc.placa_carreta}</div></div>
+            </div>
+
+            ${checkinHtml}
+
+            <div class="etapa-box" id="etapa_box_${oc.id}">
+                <div class="etapa-label">Etapa Atual</div>
+                <div class="etapa-nome">${oc.etapa_codigo} — ${oc.etapa_nome}</div>
+                <div class="etapa-area">Responsável: ${oc.etapa_area}</div>
+            </div>
+
+            <div class="cronos-grid">
+                <div class="crono-box">
+                    <div class="crono-label">⏱ Total OC</div>
+                    <div class="crono-valor" id="crono_total_det_${oc.id}">00:00</div>
+                </div>
+                <div class="crono-box crono-etapa" id="crono_etapa_box_${oc.id}">
+                    <div class="crono-label">⚡ Etapa</div>
+                    <div class="crono-valor" id="crono_etapa_${oc.id}">00:00</div>
+                </div>
+            </div>
+
+            ${metaMin ? `
+            <div class="meta-barra-wrap">
+                <div class="meta-info">
+                    <span>Meta etapa (${metaMin} min)</span>
+                    <span id="meta_pct_${oc.id}">0%</span>
+                </div>
+                <div class="meta-barra-bg">
+                    <div class="meta-barra-fill" id="meta_barra_${oc.id}"
+                         style="width:0%;background:#16a34a;"></div>
+                </div>
+            </div>` : ''}
+
+            <div style="margin-top:10px;text-align:right;">
+                <a href="/oc/${oc.id}" style="font-size:12px;color:#1c2434;font-weight:600;">
+                    Abrir OC →</a>
+            </div>
+        </div>`;
+
+        grid.appendChild(card);
+    });
+}
+
+function atualizarCronos() {
+    const ts = agora();
+    const el = id => document.getElementById(id);
+
+    OCS_DATA.forEach(oc => {
+        const segsTotal = ts - oc.criacao_ts;
+        const segsEtapa = ts - oc.etapa_inicio_ts;
+        const metaMin   = TEMPO_META[oc.etapa_codigo] || null;
+        const metaSeg   = metaMin ? metaMin * 60 : null;
+        const estado    = estadoEtapa(segsEtapa, metaMin);
+        const pct       = metaSeg ? Math.min(Math.round((segsEtapa/metaSeg)*100), 100) : 0;
+        const totalFmt  = formatarTempo(segsTotal);
+
+        /* Timers visíveis no cabeçalho e no corpo */
+        const t = el(`crono_total_${oc.id}`);
+        if (t) t.textContent = totalFmt;
+        const td = el(`crono_total_det_${oc.id}`);
+        if (td) td.textContent = totalFmt;
+        const te = el(`crono_etapa_${oc.id}`);
+        if (te) te.textContent = formatarTempo(segsEtapa);
+
+        /* Estado do card e badge */
+        const card = el(`card_${oc.id}`);
+        if (card) card.className = `oc-card estado-${estado}`;
+
+        const badge = el(`badge_${oc.id}`);
+        if (badge) {
+            badge.className   = `card-status-badge badge-${estado}`;
+            badge.textContent = estado==='critico' ? '⚠ Atrasado'
+                              : estado==='atencao' ? '⚡ Atenção' : 'No prazo';
+        }
+
+        const etapaBox = el(`etapa_box_${oc.id}`);
+        if (etapaBox) etapaBox.className = `etapa-box ${estado==='ok'?'':estado}`;
+
+        const cronoEtapaBox = el(`crono_etapa_box_${oc.id}`);
+        if (cronoEtapaBox) cronoEtapaBox.className = `crono-box crono-etapa ${estado==='ok'?'':estado}`;
+
+        const barra = el(`meta_barra_${oc.id}`);
+        const pctEl = el(`meta_pct_${oc.id}`);
+        if (barra) {
+            barra.style.width      = pct + '%';
+            barra.style.background = estado==='critico'?'#ef4444':estado==='atencao'?'#f59e0b':'#16a34a';
+        }
+        if (pctEl) pctEl.textContent = pct + '%';
+
+        /* Timer de espera pós check-in (até 050 iniciar) */
+        if (oc.checkin_ts !== null && oc.checkin_espera_fixa === null) {
+            const secs = ts - oc.checkin_ts;
+            const ct = el(`checkin_timer_${oc.id}`);
+            if (ct) ct.textContent = formatarTempo(secs);
+            const cb = el(`checkin_box_${oc.id}`);
+            if (cb) {
+                const p = secs / (15*60);
+                cb.style.background      = p>=1?'#fee2e2':p>=.75?'#fef9c3':'#eff6ff';
+                cb.style.borderLeftColor = p>=1?'#ef4444':p>=.75?'#f59e0b':'#3b82f6';
+            }
+        }
+
+        /* Timer 1: Check-in → Checklist de Entrada */
+        const w1r = el(`w1_${oc.id}`);
+        const w1t = el(`w1_${oc.id}_time`);
+        if (w1r && w1t && oc.w1_from_ts !== null) {
+            const secs = oc.w1_to_ts !== null ? oc.w1_to_ts - oc.w1_from_ts : ts - oc.w1_from_ts;
+            w1t.textContent  = formatarTempo(secs);
+            w1r.className    = `wait-row ${estadoEspera(secs/60)}`;
+        }
+
+        /* Timer 2: Checklist de Entrada → Carregamento */
+        const w2r = el(`w2_${oc.id}`);
+        const w2t = el(`w2_${oc.id}_time`);
+        if (w2r && w2t && oc.w2_from_ts !== null) {
+            const secs = oc.w2_to_ts !== null ? oc.w2_to_ts - oc.w2_from_ts : ts - oc.w2_from_ts;
+            w2t.textContent  = formatarTempo(secs);
+            w2r.className    = `wait-row ${estadoEspera(secs/60)}`;
+        }
+    });
+}
+
+construirCards();
+atualizarCronos();
+setInterval(atualizarCronos, 1000);
+setInterval(() => location.reload(), 60000);
+</script>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 090 — BALANÇA FINAL</h2>
+    <p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+    <hr>
+{% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-danger">{{ mensagem }}</div>
+    {% endif %}
+
+    <!-- Resumo da balança inicial -->
+    {% if pesagem_inicial %}
+    <div class="alert alert-info">
+        <strong>Pesagem Inicial registrada:</strong> {{ pesagem_inicial }} kg
+    </div>
+    {% endif %}
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Pesagem Final (kg)</label>
+            <input type="number" name="pesagem" class="form-control"
+                   step="0.01" min="0" placeholder="Ex: 26500.00" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Número do Ticket</label>
+            <input type="text" name="numero_ticket" class="form-control"
+                   placeholder="Ex: TK-20250516-001" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Salvar e Finalizar</button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+
+    </form>
+
+</div>
+
+{% endblock %}

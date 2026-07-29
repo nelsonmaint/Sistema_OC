@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h2 class="mb-0">Usuários Cadastrados</h2>
+        <small class="text-muted">{{ usuarios | length }} usuário(s)</small>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/admin/usuarios/novo" class="btn btn-primary">+ Novo Usuário</a>
+        <a href="/dashboard" class="btn btn-outline-secondary">← Dashboard</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+    <thead style="background:#f8f9fa;">
+        <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Área</th>
+            <th>Perfil</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in usuarios %}
+        <tr>
+            <td class="fw-semibold">{{ u.nome }}</td>
+            <td class="text-muted">{{ u.email }}</td>
+            <td>
+                <span class="badge"
+                      style="background:#1c2434; font-size:12px;">
+                    {{ u.area }}
+                </span>
+            </td>
+            <td>
+                {% if u.is_admin %}
+                    <span class="badge bg-warning text-dark">Admin</span>
+                {% else %}
+                    <span class="badge bg-secondary">Usuário</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if u.id != current_user.id %}
+                <form method="POST"
+                      action="/admin/usuarios/{{ u.id }}/excluir"
+                      onsubmit="return confirm('Excluir {{ u.nome }}?')">
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger">
+                        Excluir
+                    </button>
+                </form>
+                {% else %}
+                    <span class="text-muted" style="font-size:12px;">você</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center text-muted py-4">
+                Nenhum usuário cadastrado.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+{% endblock %}

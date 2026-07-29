@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 110 — LCQ FINAL</h2>
+    <p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+    <hr>
+{% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-danger">{{ mensagem }}</div>
+    {% endif %}
+
+    <form method="POST">
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Nº LOTE</label>
+            <input type="text" name="lote" class="form-control"
+                   placeholder="Digite o número do lote" required>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Aprovação</label>
+            <select name="aprovacao" class="form-control" required
+                    onchange="verificarAprovacao(this.value)">
+                <option value="">Selecione</option>
+                <option value="SIM">SIM</option>
+                <option value="NAO">NÃO</option>
+                <option value="NA">N/A</option>
+            </select>
+        </div>
+
+        <div id="alerta_nao" style="display:none;" class="alert alert-danger">
+            ⛔ Aprovação <strong>NÃO</strong> — a etapa não pode ser finalizada.
+            Entre em contato com o setor responsável antes de prosseguir.
+        </div>
+
+        <div id="botao_salvar">
+            <button type="submit" class="btn btn-success" id="btn_submit">
+                Salvar e Finalizar
+            </button>
+            <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+function verificarAprovacao(val) {
+    let alerta = document.getElementById('alerta_nao');
+    let btn    = document.getElementById('btn_submit');
+    if (val === 'NAO') {
+        alerta.style.display = 'block';
+        btn.disabled = true;
+    } else {
+        alerta.style.display = 'none';
+        btn.disabled = false;
+    }
+}
+</script>
+
+{% endblock %}

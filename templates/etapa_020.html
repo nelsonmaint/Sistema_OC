@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="mb-3">
+        <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    </div>
+    <h2 class="mb-1">ETAPA 020 — PCP</h2>
+    <hr>
+    {% include '_contexto.html' %}
+
+    {% if mensagem %}
+    <div class="alert alert-warning">{{ mensagem }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Número do Lote</label>
+            <input type="text" name="lote" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Salvar e Finalizar</button>
+        <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+{% endblock %}

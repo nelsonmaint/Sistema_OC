@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2>Nova Ordem de Carregamento</h2>
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Pedido de Venda</label>
+<input type="text" name="pedido" class="form-control">
+</div>
+
+<div class="mb-3">
+<label>Tipo de Frete</label>
+<select name="frete" class="form-control" data-no-convert="true">
+<option>CIF</option>
+<option>FOB</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>Cliente</label>
+<select id="cliente" name="cliente" class="form-control">
+<option value="">Selecione</option>
+<option>ALPEK POLYESTER</option>
+<option>AMBEV - ESTÂNCIA - SE</option>
+<option>AMBEV - ITAPISSUMA - PE</option>
+<option>AMBEV - SÃO LUÍS - MA</option>
+<option>AMBEV - TERESINA - PI</option>
+<option>AMBEV - AQUIRAZ - CE</option>
+<option>BRASKEM - MACEIO</option>
+<option>BRASKEM - MARECHAL</option>
+<option>BRILUX - CE</option>
+<option>BRILUX - PE</option>
+<option>CAPE MARECHAL</option>
+<option>COMPESA - PIRAPAMA</option>
+<option>COMPESA - TAPACURÁ</option>
+<option>COMPESA INDUSTRIALIZAÇÃO</option>
+<option>FAG</option>
+<option>GERDAU</option>
+<option>HEINEKEN (IGARASSU)</option>
+<option>HEINEKEN (PACATUBA)</option>
+<option>INGREDION</option>
+<option>INTERLÂNDIA - AL</option>
+<option>INTERLÂNDIA - CE</option>
+<option>INTERLÂNDIA - PE</option>
+<option>MUSASHI</option>
+<option>NATURA</option>
+<option>PECEM - (ACIARIA)</option>
+<option>PECEM - (ALTO FORNO)</option>
+<option>PECEM - (CARBOQUIMICOS)</option>
+<option>PECEM - (CTP TRATAMENTO DE EFLUENTES)</option>
+<option>PECEM - (GTP DESTILARIA DE AMOMIA)</option>
+<option>PECEM - (LINGOTAMENTO)</option>
+<option>PECEM - (POWER PLANT)</option>
+<option>PERNAMBUCO QUIMICA</option>
+<option>PQA</option>
+<option>QUIMICA AMPARO - PE</option>
+<option>QUIMICA DA MATA</option>
+<option>SABARÁ - PE</option>
+<option>UNIL</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>Código do Produto</label>
+<!-- name="codigo" para não conflitar com o select de produto -->
+<input type="text" name="codigo" class="form-control"
+       placeholder="Ex: 1000012">
+</div>
+
+<div class="mb-3">
+<label>Produto</label>
+<select id="produto" name="produto" class="form-control">
+<option value="">Selecione</option>
+<option>Cloro</option>
+<option>Soda Cáustica</option>
+<option>Ácido Clorídrico</option>
+<option>Hipoclorito ATC</option>
+<option>Hipoclorito BTC</option>
+<option>Ácido Sulfúrico</option>
+<option>Madeira</option>
+<option>Resíduos</option>
+<option>Outros</option>
+</select>
+</div>
+
+<div class="mb-3">
+<label>Transportadora</label>
+<select id="transportadora" name="transportadora" class="form-control">
+<option value="">Selecione</option>
+<option>A5LOG</option>
+<option>ARL LIMA</option>
+<option>ALQUIMIA</option>
+<option>BAUMINAS</option>
+<option>CLORONORTE</option>
+<option>CONCORDIA TRANSPORTES RODOVIARIOS LTDA</option>
+<option>CESLOG CESARI LOGISTICA LTDA</option>
+<option>COOPERCELL</option>
+<option>COOPERTRANS</option>
+<option>DA FONTE</option>
+<option>DUCLORO COMERCIO</option>
+<option>DUPLAQUIMICA COMERCIO E TRANSPORTE DE PRODUTOS QUIMICOS LTDA</option>
+<option>EXPRESSO</option>
+<option>EJG TRANSPORTES</option>
+<option>FAG</option>
+<option>F.C. OLIVEIRA & CIA. LTDA</option>
+<option>FABRICA CORDEIRO</option>
+<option>FERNANDO</option>
+<option>FORT LOG TRANSPORTES</option>
+<option>GB TRANSPORTES</option>
+<option>INTERLANDIA</option>
+<option>ISOMAR</option>
+<option>JANGA</option>
+<option>JOSE HERCULANO</option>
+<option>LIQUID</option>
+<option>MERCOTRANS TRANSPORTES E LOGISTICA LTDA</option>
+<option>MK QUIMICA</option>
+<option>NUTRILAR</option>
+<option>PRÓPRIO</option>
+<option>PRODUTO DE LIMPEZA</option>
+<option>QUIMITEXTIL</option>
+<option>RECASS</option>
+<option>RECIFE TRANSPORTES LOGISTICA LTDA</option>
+<option>RENER</option>
+<option>ROBERTO TEALDI TRANSPORTES LTDA</option>
+<option>RHOFER</option>
+<option>SATELOG TRANSPORTES LOGISTICA E LOCACOES LTDA</option>
+<option>SEDA TRANSPORTE E LOGISTICA LTDA</option>
+<option>SIDREN TRANSPORTES LTDA</option>
+<option>SYMBOLUMS TRANSPORTES E LOGISTICA LTDA</option>
+<option>TALMAR</option>
+<option>TRANSCHEMICAL TRANSPORTE</option>
+<option>TRANSPORTADORA CONTATTO</option>
+<option>TRANSPORTADORA RENER LTDA</option>
+<option>TRANSMOG</option>
+<option>TRANSPIRAJA</option>
+<option>TRANSPORTES LIDA LTDA</option>
+<option>TRELSA</option>
+<option>TUFÃO</option>
+<option>ULTRALOG</option>
+<option>UNIQUIMICA</option>
+<option>UNITRANSPORTES LTDA</option>
+<option>VIA CAMPOS PE</option>
+<option>81 TRANSPORTES</option>
+</select>
+</div>
+
+<button class="btn btn-success">Salvar OC</button>
+
+</form>
+</div>
+
+<script>
+new TomSelect("#produto");
+new TomSelect("#cliente");
+new TomSelect("#transportadora");
+</script>
+
+{% endblock %}

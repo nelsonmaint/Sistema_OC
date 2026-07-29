@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-1">Bem-vindo, {{ current_user.nome or current_user.email }}!</h2>
+<p class="text-muted mb-4">{{ current_user.area }} — Sistema de Ordem de Carregamento</p>
+
+<!-- ── Caixa de pendências ── -->
+{% if pendencias %}
+<div style="
+    background: #fefce8;
+    border: 2px solid #fde68a;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+">
+    <div style="font-size: 32px; line-height:1;">🔔</div>
+    <div style="flex:1;">
+        <div style="font-weight:700; font-size:16px; color:#92400e;">
+            {{ pendencias|length }} OC{{ 's' if pendencias|length > 1 }} aguardando sua área
+        </div>
+        <div style="font-size:13px; color:#a16207; margin-top:4px;">
+            {% for p in pendencias %}
+                <a href="/oc/{{ p.id }}"
+                   style="color:#92400e; font-weight:600; margin-right:10px;">
+                    {{ p.numero_oc }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <a href="/ocs" class="btn btn-sm btn-warning" style="white-space:nowrap;">
+        Ver todas →
+    </a>
+</div>
+{% endif %}
+
+<hr>
+
+<div class="d-flex flex-wrap gap-2">
+
+    <a href="/oc/nova" class="btn btn-primary">
+        + Nova Ordem de Carregamento
+    </a>
+
+    <a href="/ocs" class="btn btn-outline-secondary">
+        📋 Ver OCs
+    </a>
+
+    <a href="/dashboard/gerencial" class="btn btn-outline-secondary">
+        📊 Dashboard Gerencial
+    </a>
+
+    <a href="/acompanhamento" class="btn btn-outline-secondary">
+        🟢 Acompanhamento ao Vivo
+    </a>
+
+    {% if current_user.is_admin %}
+    <a href="/admin/usuarios" class="btn btn-outline-dark">
+        👥 Gerenciar Usuários
+    </a>
+    {% endif %}
+
+    <a href="/logout" class="btn btn-danger ms-auto">
+        Sair
+    </a>
+
+</div>
+
+{% endblock %}

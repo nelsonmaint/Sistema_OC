@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="mb-3">
+    <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+</div>
+<h2>ETAPA 060 — CHECKLIST DE ENTRADA</h2>
+<p><strong>OC:</strong> {{ oc.numero_oc }}</p>
+
+{% if mensagem %}
+<div class="alert alert-danger">{{ mensagem }}</div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" id="form060">
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- SINALIZAÇÃO                         -->
+    <!-- ═══════════════════════════════════ -->
+    <h4 class="text-primary mt-3">SINALIZAÇÃO</h4>
+
+    <div class="mb-2">
+        <label class="form-label">Existem rótulos de risco no tanque?</label>
+        <select name="rotulos_risco" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Existe painel de segurança?</label>
+        <select name="painel_seguranca" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ESTADO DE CONSERVAÇÃO              -->
+    <!-- ═══════════════════════════════════ -->
+    <h4 class="text-primary mt-4">ESTADO DE CONSERVAÇÃO</h4>
+
+    <div class="mb-2">
+        <label class="form-label">Pneus em bom estado, não danificados (CNT 550 / 80 BANDAS)?</label>
+        <select name="pneus" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Luzes de sinalização e faróis em bom estado de funcionamento?</label>
+        <select name="luzes" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Fios em bom estado (não estão soltos, desencapados, etc.)?</label>
+        <select name="fios" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Cabine em bom estado de conservação, sem amassados, corrosão ou outras avarias?</label>
+        <select name="cabine" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Tanque de combustível (motor) em bom estado?</label>
+        <select name="tanque_combustivel" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Motor de arranque funciona?</label>
+        <select name="motor_arranque" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">O para-choque está em bom estado?</label>
+        <select name="parachoque" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Tanque está em bom estado de conservação (corrosão, vazamentos, etc.)?</label>
+        <select name="tanque_carga" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">As válvulas são adequadas — 2 bloqueios: 1 geral e 1 rápido?</label>
+        <select name="valvulas" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Ponto de fixação do cabo terra está correto?</label>
+        <select name="cabo_terra" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Dispositivo para lacração adequado?</label>
+        <select name="lacracao" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Junta em bom estado de conservação?</label>
+        <select name="junta" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Emissão de fumaça dentro do limite de tolerância?</label>
+        <select name="fumaca" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- EQUIPAMENTOS                        -->
+    <!-- ═══════════════════════════════════ -->
+    <h4 class="text-primary mt-4">EQUIPAMENTOS</h4>
+
+    <div class="mb-2">
+        <label class="form-label">Extintor</label>
+        <select name="extintor" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Cinto de segurança</label>
+        <select name="cinto" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Tacógrafo</label>
+        <select name="tacografo" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Kit de segurança</label>
+        <select name="kit_seguranca" class="form-control" required>
+            <option value="">Selecione</option>
+            <option>SIM</option><option>NÃO</option><option>N/A</option>
+        </select>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- APROVAÇÃO                           -->
+    <!-- ═══════════════════════════════════ -->
+    <h4 class="text-primary mt-4">APROVAÇÃO</h4>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Veículo aprovado?</label>
+        <select name="aprovado" class="form-control" required
+                onchange="checarAprovacao(this.value)">
+            <option value="">Selecione</option>
+            <option>SIM</option>
+            <option>NÃO</option>
+        </select>
+    </div>
+
+    <div class="mb-3" id="bloco_observacoes" style="display:none;">
+        <label class="form-label fw-bold">Observações <span class="text-danger">(obrigatório quando houver NÃO)</span></label>
+        <textarea name="observacoes" class="form-control" rows="3"
+                  id="campo_observacoes"></textarea>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- FOTOS                               -->
+    <!-- ═══════════════════════════════════ -->
+    <h5 class="mt-4">Fotos da inspeção</h5>
+    <div class="mb-3">
+        <input type="file" name="imagens" multiple class="form-control" required
+               accept="image/*">
+        <small class="text-muted">Selecione uma ou mais fotos.</small>
+    </div>
+
+    <!-- ═══════════════════════════════════ -->
+    <!-- ASSINATURAS                         -->
+    <!-- ═══════════════════════════════════ -->
+    <h5 class="mt-4">Assinaturas</h5>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Assinatura do Vigilante</label><br>
+        <canvas id="canvas_vigilante" width="450" height="150"
+                style="border:1px solid #000; border-radius:6px; cursor:crosshair;"></canvas>
+        <input type="hidden" name="assinatura_vigilante" id="assinatura_vigilante">
+        <br>
+        <button type="button" class="btn btn-warning btn-sm mt-2"
+                onclick="limparCanvas('canvas_vigilante')">Limpar</button>
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">Assinatura do Motorista</label><br>
+        <canvas id="canvas_motorista" width="450" height="150"
+                style="border:1px solid #000; border-radius:6px; cursor:crosshair;"></canvas>
+        <input type="hidden" name="assinatura_motorista" id="assinatura_motorista">
+        <br>
+        <button type="button" class="btn btn-warning btn-sm mt-2"
+                onclick="limparCanvas('canvas_motorista')">Limpar</button>
+    </div>
+
+    <button type="submit" class="btn btn-success"
+            onclick="return finalizar060()">
+        FINALIZAR CHECKLIST
+    </button>
+
+    <a href="/oc/{{ oc.id }}" class="btn btn-secondary">Voltar</a>
+
+</form>
+</div>
+
+<script>
+
+/* ── Habilitar desenho no canvas ── */
+function prepararCanvas(id) {
+    let canvas = document.getElementById(id);
+    let ctx = canvas.getContext('2d');
+    let desenhando = false;
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#000';
+
+    /* Mouse */
+    canvas.addEventListener('mousedown', function(e) {
+        desenhando = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+    });
+    canvas.addEventListener('mousemove', function(e) {
+        if (!desenhando) return;
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+    });
+    canvas.addEventListener('mouseup',    function() { desenhando = false; });
+    canvas.addEventListener('mouseleave', function() { desenhando = false; });
+
+    /* Touch (celular/tablet) */
+    canvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        let t = e.touches[0];
+        let r = canvas.getBoundingClientRect();
+        desenhando = true;
+        ctx.beginPath();
+        ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!desenhando) return;
+        let t = e.touches[0];
+        let r = canvas.getBoundingClientRect();
+        ctx.lineTo(t.clientX - r.left, t.clientY - r.top);
+        ctx.stroke();
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', function() { desenhando = false; });
+}
+
+function limparCanvas(id) {
+    let c = document.getElementById(id);
+    c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+/* ── Exibir observações se houver NÃO ── */
+function checarAprovacao(val) {
+    let blocoObs = document.getElementById('bloco_observacoes');
+    let campoObs = document.getElementById('campo_observacoes');
+    if (val === 'NÃO') {
+        blocoObs.style.display = 'block';
+        campoObs.setAttribute('required', 'required');
+    } else {
+        blocoObs.style.display = 'none';
+        campoObs.removeAttribute('required');
+    }
+}
+
+/* ── Verificar NÃO em qualquer select e exigir obs ── */
+function temNaoEmSelects() {
+    let selects = document.querySelectorAll('select');
+    for (let s of selects) {
+        if (s.value === 'NÃO') return true;
+    }
+    return false;
+}
+
+/* ── Validação final e captura das assinaturas ── */
+function finalizar060() {
+
+    /* Captura assinaturas */
+    let cVig = document.getElementById('canvas_vigilante');
+    let cMot = document.getElementById('canvas_motorista');
+    let iVig = document.getElementById('assinatura_vigilante');
+    let iMot = document.getElementById('assinatura_motorista');
+
+    iVig.value = cVig.toDataURL();
+    iMot.value = cMot.toDataURL();
+
+    /* Checar se assinaturas foram desenhadas (canvas não-vazio) */
+    function canvasVazio(canvas) {
+        let data = canvas.getContext('2d')
+                         .getImageData(0, 0, canvas.width, canvas.height).data;
+        for (let i = 3; i < data.length; i += 4) {
+            if (data[i] > 0) return false; /* tem pixel não-transparente */
+        }
+        return true;
+    }
+
+    if (canvasVazio(cVig)) {
+        alert('A assinatura do vigilante é obrigatória.');
+        return false;
+    }
+
+    if (canvasVazio(cMot)) {
+        alert('A assinatura do motorista é obrigatória.');
+        return false;
+    }
+
+    /* Checar observações quando há NÃO */
+    if (temNaoEmSelects()) {
+        let obs = document.getElementById('campo_observacoes').value.trim();
+        if (!obs) {
+            alert('Obrigatório informar observações quando houver resposta NÃO.');
+            document.getElementById('bloco_observacoes').style.display = 'block';
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/* Inicializar os dois canvas */
+prepararCanvas('canvas_vigilante');
+prepararCanvas('canvas_motorista');
+
+</script>
+
+{% endblock %}

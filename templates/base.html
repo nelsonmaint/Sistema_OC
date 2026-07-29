@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema OC — Chlorum Solutions</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --cor-primaria:       #1c2434;
+            --cor-primaria-hover: #263247;
+        }
+
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+
+        /* ── Cabeçalho ── */
+        .topo {
+            background-color: var(--cor-primaria);
+            color: white; padding: 0; margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .topo-inner {
+            display: flex; align-items: center;
+            gap: 12px; padding: 10px 0;
+        }
+        .topo-logo-wrap {
+            background: #ffffff; border-radius: 8px;
+            padding: 5px 12px; display: flex;
+            align-items: center; flex-shrink: 0;
+        }
+        .topo-logo { height: 38px; width: auto; object-fit: contain; display: block; }
+        .topo-divisor { width: 1px; height: 38px; background: rgba(255,255,255,.15); }
+        .topo-textos { line-height: 1.25; }
+        .topo-textos h1 { margin: 0; font-size: 17px; font-weight: 700; }
+        .topo-textos small {
+            font-size: 11px; opacity: .55;
+            letter-spacing: 1.2px; text-transform: uppercase;
+        }
+        .topo-usuario { margin-left: auto; font-size: 13px; text-align: right; line-height: 1.4; }
+        .topo-usuario span { font-size: 11px; opacity: .5; }
+
+        /* ── Botão hamburguer ── */
+        .btn-menu {
+            background: none; border: none;
+            color: rgba(255,255,255,.8); font-size: 22px; line-height: 1;
+            cursor: pointer; padding: 4px 8px; border-radius: 6px;
+            transition: background .15s, color .15s; flex-shrink: 0;
+        }
+        .btn-menu:hover { background: rgba(255,255,255,.12); color: white; }
+
+        /* ── Caixa de conteúdo ── */
+        .container-box {
+            background: white; padding: 32px; border-radius: 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.06);
+        }
+
+        /* ── Títulos ── */
+        h2 { color: var(--cor-primaria); font-weight: 700; }
+        h4.text-primary { color: var(--cor-primaria) !important; }
+
+        /* ── Botão primário ── */
+        .btn-primary { background-color: var(--cor-primaria); border-color: var(--cor-primaria); }
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--cor-primaria-hover);
+            border-color: var(--cor-primaria-hover);
+        }
+
+        /* ── Botões SIM / NÃO / N/A ── */
+        .grupo-snia { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+        .btn-snia {
+            min-width: 72px; font-weight: 600; font-size: 14px;
+            border-width: 2px; border-radius: 8px; transition: all .15s;
+        }
+        .btn-snia-sim { color: #16a34a; border-color: #16a34a; }
+        .btn-snia-nao { color: #dc2626; border-color: #dc2626; }
+        .btn-snia-na  { color: #6b7280; border-color: #6b7280; }
+        .btn-check:checked + .btn-snia-sim { background:#16a34a; color:#fff; border-color:#16a34a; }
+        .btn-check:checked + .btn-snia-nao { background:#dc2626; color:#fff; border-color:#dc2626; }
+        .btn-check:checked + .btn-snia-na  { background:#6b7280; color:#fff; border-color:#6b7280; }
+        .btn-snia:hover { opacity: .82; }
+
+        /* ════════════════════════════════
+           SIDEBAR
+        ════════════════════════════════ */
+        .sidebar-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.45); z-index: 1040;
+        }
+        .sidebar-overlay.ativa { display: block; }
+
+        .sidebar {
+            position: fixed; top: 0; left: 0;
+            width: 260px; height: 100vh;
+            background: var(--cor-primaria);
+            z-index: 1050;
+            transform: translateX(-100%);
+            transition: transform .28s cubic-bezier(.4,0,.2,1);
+            display: flex; flex-direction: column;
+            overflow-y: auto; overflow-x: hidden;
+        }
+        .sidebar.aberta { transform: translateX(0); }
+
+        .sidebar-topo {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            flex-shrink: 0;
+        }
+        .sidebar-titulo {
+            color: white; font-weight: 700; font-size: 15px; letter-spacing: .3px;
+        }
+        .sidebar-fechar {
+            background: none; border: none; color: rgba(255,255,255,.45);
+            font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 4px;
+            transition: color .15s, background .15s; line-height: 1;
+        }
+        .sidebar-fechar:hover { color: white; background: rgba(255,255,255,.1); }
+
+        .sidebar-nav { padding: 10px 0; flex: 1; }
+
+        .sidebar-secao {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: rgba(255,255,255,.3);
+            padding: 14px 18px 6px;
+        }
+
+        .sidebar-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 18px;
+            color: rgba(255,255,255,.65);
+            text-decoration: none;
+            font-size: 14px; font-weight: 500;
+            transition: background .15s, color .15s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-item:hover {
+            background: rgba(255,255,255,.08);
+            color: white; text-decoration: none;
+        }
+        .sidebar-item.ativo {
+            background: rgba(255,255,255,.12);
+            color: white;
+            border-left-color: #60a5fa;
+        }
+        .sidebar-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+        .sidebar-item-label { flex: 1; }
+
+        .sidebar-divider {
+            height: 1px; background: rgba(255,255,255,.1); margin: 6px 0;
+        }
+
+        .sidebar-rodape {
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding: 8px 0; flex-shrink: 0;
+        }
+
+        /* Badge de usuário no rodapé do sidebar */
+        .sidebar-usuario {
+            padding: 12px 18px 8px;
+            border-top: 1px solid rgba(255,255,255,.1);
+        }
+        .sidebar-usuario-nome { color: white; font-size: 13px; font-weight: 600; }
+        .sidebar-usuario-area { color: rgba(255,255,255,.4); font-size: 11px; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+{% if current_user and current_user.is_authenticated %}
+<!-- ── Overlay e Sidebar ── -->
+<div class="sidebar-overlay" id="sidebar_overlay" onclick="fecharMenu()"></div>
+
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-topo">
+        <span class="sidebar-titulo">Sistema OC</span>
+        <button class="sidebar-fechar" onclick="fecharMenu()" aria-label="Fechar menu">✕</button>
+    </div>
+
+    <div class="sidebar-nav">
+        <div class="sidebar-secao">Navegação</div>
+
+        <a class="sidebar-item" href="/acompanhamento">
+            <span class="sidebar-item-icon">🟢</span>
+            <span class="sidebar-item-label">Painel de Ordens de Carregamento</span>
+        </a>
+        <a class="sidebar-item" href="/ocs">
+            <span class="sidebar-item-icon">📋</span>
+            <span class="sidebar-item-label">Ver OCs</span>
+        </a>
+        <a class="sidebar-item" href="/oc/nova">
+            <span class="sidebar-item-icon">➕</span>
+            <span class="sidebar-item-label">Nova OC</span>
+        </a>
+
+        <div class="sidebar-divider"></div>
+
+        <a class="sidebar-item" href="/dashboard/gerencial">
+            <span class="sidebar-item-icon">📊</span>
+            <span class="sidebar-item-label">Dashboard Gerencial</span>
+        </a>
+
+        {% if current_user.is_admin %}
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-secao">Administração</div>
+        <a class="sidebar-item" href="/admin/usuarios">
+            <span class="sidebar-item-icon">👥</span>
+            <span class="sidebar-item-label">Gerenciar Usuários</span>
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="sidebar-usuario">
+        <div class="sidebar-usuario-nome">{{ current_user.nome }}</div>
+        <div class="sidebar-usuario-area">{{ current_user.area }}</div>
+    </div>
+
+    <div class="sidebar-rodape">
+        <a class="sidebar-item" href="/logout">
+            <span class="sidebar-item-icon">🚪</span>
+            <span class="sidebar-item-label">Sair</span>
+        </a>
+    </div>
+</nav>
+{% endif %}
+
+<!-- ── Cabeçalho ── -->
+<div class="topo">
+    <div class="container">
+        <div class="topo-inner">
+            {% if current_user and current_user.is_authenticated %}
+            <button class="btn-menu" onclick="abrirMenu()" aria-label="Abrir menu">☰</button>
+            {% endif %}
+            <div class="topo-logo-wrap">
+                <img src="{{ url_for('static', filename='img/chlorum-solutions.png') }}"
+                     class="topo-logo" alt="Chlorum Solutions">
+            </div>
+            <div class="topo-divisor"></div>
+            <div class="topo-textos">
+                <h1>Sistema OC</h1>
+                <small>Ordem de Carregamento</small>
+            </div>
+            {% if current_user and current_user.is_authenticated %}
+            <div class="topo-usuario">
+                {{ current_user.nome }}<br>
+                <span>{{ current_user.area }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="container-box">
+        {% block content %}{% endblock %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+/*
+  Converte selects SIM/NÃO/N/A em botões visuais.
+  Selects com data-no-convert="true" são ignorados.
+*/
+document.addEventListener('DOMContentLoaded', function () {
+    const SNIA = ['SIM', 'NÃO', 'NAO', 'N/A'];
+
+    document.querySelectorAll('select').forEach(function (sel) {
+        if (sel.dataset.noConvert === 'true') return;
+        const opcoes = Array.from(sel.options)
+                            .map(o => o.value.trim())
+                            .filter(v => v !== '');
+        if (!opcoes.every(v => SNIA.includes(v))) return;
+
+        const nome     = sel.name;
+        const required = sel.hasAttribute('required');
+        const uid      = nome + '_' + Math.random().toString(36).slice(2, 7);
+        const grupo    = document.createElement('div');
+        grupo.className = 'grupo-snia';
+
+        opcoes.forEach(function (val) {
+            const id = uid + '_' + val;
+            const input = document.createElement('input');
+            input.type  = 'radio'; input.className = 'btn-check';
+            input.name  = nome;    input.id    = id;
+            input.value = val;     input.autocomplete = 'off';
+            if (required) input.required = true;
+
+            const cls = val === 'SIM' ? 'btn-snia-sim'
+                      : val === 'NÃO' ? 'btn-snia-nao' : 'btn-snia-na';
+
+            const label = document.createElement('label');
+            label.className = 'btn btn-outline-secondary btn-snia ' + cls;
+            label.setAttribute('for', id);
+            label.textContent = val;
+
+            grupo.appendChild(input);
+            grupo.appendChild(label);
+        });
+
+        sel.style.display = 'none';
+        sel.removeAttribute('required');
+        sel.parentNode.insertBefore(grupo, sel.nextSibling);
+        grupo.addEventListener('change', e => sel.value = e.target.value);
+    });
+});
+
+/* ── Sidebar ── */
+function abrirMenu() {
+    document.getElementById('sidebar').classList.add('aberta');
+    document.getElementById('sidebar_overlay').classList.add('ativa');
+    document.body.style.overflow = 'hidden';
+}
+function fecharMenu() {
+    document.getElementById('sidebar').classList.remove('aberta');
+    document.getElementById('sidebar_overlay').classList.remove('ativa');
+    document.body.style.overflow = '';
+}
+
+/* Marca o item ativo conforme a URL atual */
+(function () {
+    const path = window.location.pathname;
+    document.querySelectorAll('.sidebar-item[href]').forEach(function (item) {
+        const href = item.getAttribute('href');
+        let ativo = false;
+        if (href === path) {
+            ativo = true;
+        } else if (href === '/ocs' && path.startsWith('/oc/') && path !== '/oc/nova') {
+            ativo = true;
+        } else if (href === '/admin/usuarios' && path.startsWith('/admin/')) {
+            ativo = true;
+        }
+        if (ativo) item.classList.add('ativo');
+    });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.oc-header {
+    background: #f8fafc; border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 24px;
+    border: 1px solid #e9ecef;
+    display: flex; flex-wrap: wrap;
+    gap: 20px; align-items: center;
+    justify-content: space-between;
+}
+.oc-header-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px; font-weight: 700; color: #1c2434;
+}
+.oc-header-meta { font-size: 13px; color: #6b7280; margin-top: 2px; }
+
+.proxima-box {
+    background: #eff6ff; border: 1px solid #bfdbfe;
+    border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;
+}
+.proxima-box.em-andamento { background: #fefce8; border-color: #fde68a; }
+.proxima-box.concluida    { background: #f0fdf4; border-color: #bbf7d0; }
+
+/* ── Acordeão ── */
+.etapa-acordeao { margin-bottom: 10px; border-radius: 10px;
+    overflow: hidden; border: 1px solid #e9ecef; }
+.etapa-acordeao-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; cursor: pointer;
+    background: #f8fafc; user-select: none; transition: background .15s;
+}
+.etapa-acordeao-header:hover { background: #f1f5f9; }
+.etapa-acordeao-header.aberto { background: #1c2434; color: white; }
+.etapa-codigo-badge {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    background: rgba(0,0,0,.08); padding: 3px 8px;
+    border-radius: 4px; flex-shrink: 0;
+}
+.etapa-acordeao-header.aberto .etapa-codigo-badge { background: rgba(255,255,255,.15); }
+.etapa-titulo { flex: 1; font-weight: 600; font-size: 14px; }
+.etapa-duracao { font-family:'IBM Plex Mono',monospace; font-size:13px;
+    padding: 2px 8px; border-radius: 6px; }
+.dur-ok      { background:#dcfce7; color:#16a34a; }
+.dur-critico { background:#fee2e2; color:#dc2626; }
+.dur-na      { background:#f1f5f9; color:#9ca3af; }
+.etapa-chevron { font-size:12px; margin-left:4px; transition:transform .2s; }
+.etapa-acordeao-header.aberto .etapa-chevron { transform:rotate(180deg); }
+.etapa-corpo { display:none; padding:20px; background:white;
+    border-top:1px solid #e9ecef; }
+.etapa-corpo.aberto { display:block; }
+
+/* ── Dados ── */
+.dados-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+    gap: 14px; margin-bottom: 16px;
+}
+.dado-label { font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.7px; color:#9ca3af; margin-bottom:3px; }
+.dado-valor { font-size:14px; color:#1c2434; font-weight:500; }
+.dado-valor.ok  { color:#16a34a; font-weight:700; }
+.dado-valor.nao { color:#dc2626; font-weight:700; }
+.dado-valor.na  { color:#9ca3af; }
+
+.secao-titulo { font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.8px; color:#6b7280; border-bottom:1px solid #f1f5f9;
+    padding-bottom:6px; margin:18px 0 12px; }
+
+/* ── Assinaturas ── */
+.assinaturas-grid { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:12px; }
+.assinatura-box { background:#f8fafc; border:1px solid #e9ecef;
+    border-radius:8px; padding:10px 14px; text-align:center; }
+.assinatura-label { font-size:11px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.7px; color:#9ca3af; margin-bottom:8px; }
+.assinatura-img { max-width:220px; max-height:100px; border:1px solid #e9ecef;
+    border-radius:4px; background:white; display:block; }
+
+/* ── Fotos ── */
+.fotos-grid { display:flex; flex-wrap:wrap; gap:10px; margin-top:4px; }
+.foto-thumb { width:100px; height:80px; object-fit:cover; border-radius:6px;
+    border:1px solid #e9ecef; cursor:pointer; transition:transform .15s; }
+.foto-thumb:hover { transform:scale(1.05); }
+
+/* ── Lightbox ── */
+.lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85);
+    z-index:2000; align-items:center; justify-content:center; }
+.lightbox.ativo { display:flex; }
+.lightbox img { max-width:90vw; max-height:90vh; border-radius:8px; }
+.lightbox-fechar { position:absolute; top:20px; right:24px; color:white;
+    font-size:32px; cursor:pointer; background:none; border:none; line-height:1; }
+
+/* ── Modal exclusão ── */
+.modal-excluir-overlay { display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.5); z-index:1000;
+    align-items:center; justify-content:center; }
+.modal-excluir-overlay.ativo { display:flex; }
+.modal-excluir-box { background:white; border-radius:14px; padding:28px;
+    width:90%; max-width:480px; }
+</style>
+
+<div>
+
+    <!-- ── Cabeçalho ── -->
+    <div class="oc-header">
+        <div>
+            <div class="oc-header-num">{{ oc.numero_oc }}</div>
+            <div class="oc-header-meta">
+                Criada em {{ oc.data_criacao.strftime('%d/%m/%Y às %H:%M') }}
+            </div>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            {% if oc.status == 'concluida' %}
+                <span class="badge bg-success" style="font-size:13px;">✔ Concluída</span>
+            {% else %}
+                <span class="badge bg-warning text-dark" style="font-size:13px;">Em Andamento</span>
+            {% endif %}
+
+            {% if current_user.is_admin %}
+                <a href="/oc/{{ oc.id }}/editar"
+                   class="btn btn-sm btn-outline-primary">✏️ Editar</a>
+                <button class="btn btn-sm btn-outline-danger"
+                        onclick="abrirModalExcluir()">🗑 Excluir</button>
+            {% endif %}
+
+            <a href="/ocs" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+        </div>
+    </div>
+
+    <!-- ── Check-in Portaria (etapa paralela) — só mostra quando pendente/em andamento ── -->
+    {% if not oc.excluida and checkin_status != 'concluido' %}
+    <div style="
+        background: {% if checkin_status == 'em_andamento' %}#fefce8{% else %}#f8fafc{% endif %};
+        border: 1px solid {% if checkin_status == 'em_andamento' %}#fde68a{% else %}#e9ecef{% endif %};
+        border-left: 4px solid {% if checkin_status == 'em_andamento' %}#f59e0b{% else %}#9ca3af{% endif %};
+        border-radius: 10px; padding: 14px 20px; margin-bottom: 20px;
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    ">
+        <div>
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase;
+                        letter-spacing:.7px; color:#6b7280; margin-bottom:4px;">
+                Check-in Portaria — Etapa 040
+            </div>
+            {% if checkin_status == 'em_andamento' %}
+                <div style="font-weight:700; color:#ca8a04; font-size:14px;">Em andamento...</div>
+            {% else %}
+                <div style="color:#6b7280; font-size:14px;">Motorista ainda não realizou o check-in</div>
+            {% endif %}
+        </div>
+        {% if pode_iniciar_checkin %}
+            <a href="/oc/{{ oc.id }}/iniciar/040" class="btn btn-sm btn-primary">
+                Iniciar Check-in
+            </a>
+        {% elif checkin_status == 'em_andamento' and '040' in permitidas %}
+            <a href="/oc/{{ oc.id }}/formulario/040" class="btn btn-sm btn-warning">
+                Continuar Check-in
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ── Próxima ação ── -->
+    {% if oc.status == 'concluida' %}
+        <div class="proxima-box concluida mb-4">
+            <strong>✔ OC Concluída com sucesso!</strong>
+        </div>
+    {% elif em_andamento %}
+        <div class="proxima-box em-andamento mb-4">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase;
+                        letter-spacing:.7px; color:#92400e; margin-bottom:4px;">
+                Etapa em Andamento
+            </div>
+            <strong>{{ em_andamento.codigo_etapa }} — {{ ETAPAS[em_andamento.codigo_etapa] }}</strong>
+            <div style="margin-top:8px;">
+                <a href="/oc/{{ oc.id }}/formulario/{{ em_andamento.codigo_etapa }}"
+                   class="btn btn-sm btn-primary">Abrir Etapa</a>
+            </div>
+        </div>
+    {% elif proxima %}
+        <div class="proxima-box mb-4">
+            <div style="font-size:12px; font-weight:700; text-transform:uppercase;
+                        letter-spacing:.7px; color:#1e40af; margin-bottom:4px;">
+                Próxima Etapa
+            </div>
+            <strong>{{ proxima }} — {{ ETAPAS[proxima] }}</strong>
+            <span style="color:#6b7280; font-size:13px;">({{ AREAS[proxima] }})</span>
+            <div style="margin-top:8px;">
+                {% if proxima == '050' and checkin_status != 'concluido' %}
+                    <span style="font-size:13px; color:#ca8a04; font-weight:600;">
+                        ⏳ Aguardando check-in da Portaria
+                    </span>
+                {% elif proxima in permitidas %}
+                    <a href="/oc/{{ oc.id }}/iniciar/{{ proxima }}"
+                       class="btn btn-sm btn-primary">Iniciar Etapa</a>
+                {% else %}
+                    <span class="text-muted" style="font-size:13px;">
+                        Aguardando: {{ AREAS[proxima] }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- ── Histórico ── -->
+    <div style="font-size:13px; font-weight:700; text-transform:uppercase;
+                letter-spacing:.8px; color:#6b7280; margin-bottom:14px;">
+        Histórico de Etapas
+    </div>
+
+    {% set CAMPOS_ASSINATURA = [
+        'assinatura_motorista','assinatura_faturamento',
+        'assinatura_vigilante','assinatura_operador',
+        'assinatura_supervisor_antes','assinatura_supervisor_depois'
+    ] %}
+    {% set CAMPOS_FOTO = [
+        'imagem','img_parte_superior','img_nivel','img_domo',
+        'img_lacres','img_mangueira_reservatorio','img_valvula'
+    ] %}
+    {% set LABELS_ASS = {
+        'assinatura_motorista':'Motorista','assinatura_faturamento':'Faturamento',
+        'assinatura_vigilante':'Vigilante','assinatura_operador':'Operador',
+        'assinatura_supervisor_antes':'Supervisor (antes)',
+        'assinatura_supervisor_depois':'Supervisor (depois)',
+    } %}
+
+    {% for etapa in etapas %}
+    {% set d = dados.get(etapa.codigo_etapa, []) %}
+    {% set meta = TEMPO_META.get(etapa.codigo_etapa) %}
+
+    {% if etapa.duracao is not none and meta %}
+        {% set dur_cls = 'dur-critico' if etapa.duracao > meta else 'dur-ok' %}
+    {% elif etapa.duracao is not none %}
+        {% set dur_cls = 'dur-ok' %}
+    {% else %}
+        {% set dur_cls = 'dur-na' %}
+    {% endif %}
+
+    <div class="etapa-acordeao">
+        <div class="etapa-acordeao-header"
+             onclick="toggleEtapa('etapa_{{ etapa.codigo_etapa }}', this)">
+            <span class="etapa-codigo-badge">{{ etapa.codigo_etapa }}</span>
+            <span class="etapa-titulo">{{ ETAPAS[etapa.codigo_etapa] }}</span>
+            {% if etapa.duracao is not none %}
+                <span class="etapa-duracao {{ dur_cls }}">
+                    {{ etapa.duracao }} min
+                    {% if meta %}<span style="opacity:.6;font-size:11px;">/{{ meta }}</span>{% endif %}
+                </span>
+            {% else %}
+                <span class="etapa-duracao dur-na">Em andamento</span>
+            {% endif %}
+            <span class="etapa-chevron">▼</span>
+        </div>
+
+        <div class="etapa-corpo" id="etapa_{{ etapa.codigo_etapa }}">
+
+            <div class="dados-grid" style="grid-template-columns:repeat(3,1fr);">
+                <div><div class="dado-label">Início</div>
+                     <div class="dado-valor">{{ etapa.inicio.strftime('%d/%m/%Y %H:%M') if etapa.inicio else '—' }}</div></div>
+                <div><div class="dado-label">Fim</div>
+                     <div class="dado-valor">{{ etapa.fim.strftime('%d/%m/%Y %H:%M') if etapa.fim else '—' }}</div></div>
+                <div><div class="dado-label">Duração</div>
+                     <div class="dado-valor {{ 'nao' if (meta and etapa.duracao and etapa.duracao > meta) else 'ok' if etapa.duracao else '' }}">
+                        {{ etapa.duracao ~ ' min' if etapa.duracao is not none else '—' }}
+                        {% if meta %}<span style="font-size:11px;color:#9ca3af;">(meta {{ meta }}min)</span>{% endif %}
+                     </div></div>
+            </div>
+
+            {% if d %}
+            <div class="secao-titulo">Dados Preenchidos</div>
+
+            <!-- Campos normais -->
+            <div class="dados-grid">
+            {% for r in d %}
+                {% if r.campo not in CAMPOS_ASSINATURA and r.campo not in CAMPOS_FOTO
+                   and not r.campo.startswith('_') %}
+                <div>
+                    <div class="dado-label">
+                        {{ r.campo.replace('_',' ').title() }}
+                    </div>
+                    <div class="dado-valor
+                        {{ 'ok'  if r.valor in ['SIM','APROVADO','Sim'] else
+                           'nao' if r.valor in ['NÃO','NAO','Não'] else
+                           'na'  if r.valor == 'N/A' else '' }}">
+                        {{ r.valor or '—' }}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+
+            <!-- Assinaturas -->
+            {% set ass_list = d | selectattr('campo', 'in', CAMPOS_ASSINATURA) | list %}
+            {% if ass_list %}
+            <div class="secao-titulo">Assinaturas</div>
+            <div class="assinaturas-grid">
+                {% for r in ass_list %}
+                {% if r.valor %}
+                <div class="assinatura-box">
+                    <div class="assinatura-label">{{ LABELS_ASS.get(r.campo, r.campo) }}</div>
+                    <img src="{{ r.valor }}" class="assinatura-img"
+                         onerror="this.style.display='none'">
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Fotos -->
+            {% set foto_list = d | selectattr('campo', 'in', CAMPOS_FOTO) | list %}
+            {% if foto_list %}
+            <div class="secao-titulo">Fotos</div>
+            <div class="fotos-grid">
+                {% for r in foto_list %}
+                {% if r.valor %}
+                <img src="/{{ r.valor }}" class="foto-thumb"
+                     onclick="abrirFoto(this.src)"
+                     onerror="this.style.display='none'">
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- ── Modal de Exclusão ── -->
+<div class="modal-excluir-overlay" id="modal_excluir"
+     onclick="fecharModalExcluir(event)">
+    <div class="modal-excluir-box">
+        <h4 style="color:#dc2626; margin-bottom:8px;">🗑 Excluir {{ oc.numero_oc }}</h4>
+        <p style="font-size:13px; color:#6b7280;">
+            Esta ação é irreversível. Todos os dados e etapas desta OC serão
+            permanentemente removidos.
+        </p>
+
+        <form method="POST" action="/oc/{{ oc.id }}/excluir">
+            <div class="mb-3">
+                <label class="form-label fw-bold">
+                    Motivo <span class="text-danger">*</span>
+                </label>
+                <select name="motivo_cancelamento" class="form-control" required
+                        data-no-convert="true">
+                    <option value="">Selecione o motivo...</option>
+                    <option value="NAO_COMPARECEU">Não Compareceu</option>
+                    <option value="ALTERACAO_PROG">Alteração de Programação</option>
+                    <option value="CANCELAMENTO">Cancelamento Operacional</option>
+                    <option value="OUTRO">Outro Motivo</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Observações</label>
+                <textarea name="justificativa" class="form-control" rows="2"
+                          placeholder="Detalhes adicionais (opcional)..."></textarea>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    Confirmar Exclusão
+                </button>
+                <button type="button" class="btn btn-outline-secondary"
+                        onclick="fecharModal()">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="fecharFoto()">
+    <button class="lightbox-fechar">✕</button>
+    <img id="lightbox_img" src="" alt="">
+</div>
+
+<script>
+function toggleEtapa(id, header) {
+    const corpo = document.getElementById(id);
+    const aberto = corpo.classList.toggle('aberto');
+    header.classList.toggle('aberto', aberto);
+}
+
+function abrirFoto(src) {
+    document.getElementById('lightbox_img').src = src;
+    document.getElementById('lightbox').classList.add('ativo');
+}
+function fecharFoto() {
+    document.getElementById('lightbox').classList.remove('ativo');
+}
+
+function abrirModalExcluir() {
+    document.getElementById('modal_excluir').classList.add('ativo');
+}
+function fecharModal() {
+    document.getElementById('modal_excluir').classList.remove('ativo');
+}
+function fecharModalExcluir(e) {
+    if (e.target.id === 'modal_excluir') fecharModal();
+}
+</script>
+
+{% endblock %}

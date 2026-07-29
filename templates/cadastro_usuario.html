@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/admin/usuarios" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    <h2 class="mb-0">Novo Usuário</h2>
+</div>
+
+{% if sucesso %}
+<div class="alert alert-success">{{ sucesso }}</div>
+{% endif %}
+
+{% if erro %}
+<div class="alert alert-danger">{{ erro }}</div>
+{% endif %}
+
+<form method="POST" style="max-width: 500px;">
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Nome completo</label>
+        <input type="text" name="nome" class="form-control"
+               placeholder="Ex: João Silva" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">E-mail</label>
+        <input type="email" name="email" class="form-control"
+               placeholder="usuario@chlorum.com.br" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Senha</label>
+        <input type="password" name="senha" class="form-control"
+               placeholder="Mínimo 6 caracteres" minlength="6" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Área</label>
+        <select name="area" class="form-control" required>
+            <option value="">Selecione a área</option>
+            {% for area in areas %}
+            <option value="{{ area }}">{{ area }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-4 form-check">
+        <input type="checkbox" name="is_admin" id="is_admin"
+               class="form-check-input">
+        <label class="form-check-label" for="is_admin">
+            Administrador <span class="text-muted">(acesso total ao sistema)</span>
+        </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Cadastrar Usuário
+    </button>
+
+</form>
+
+{% endblock %}
