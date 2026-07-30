@@ -5,7 +5,7 @@
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
         <h2 class="mb-0">Ordens de Carregamento</h2>
-        <small class="text-muted" id="total_label">{{ lista | length }} OC(s) registrada(s)</small>
+        <small class="text-muted">{{ paginacao.total }} OC(s) registrada(s)</small>
     </div>
     <div class="d-flex gap-2">
         <a href="/dashboard" class="btn btn-outline-secondary btn-sm">← Voltar</a>
@@ -15,28 +15,31 @@
 
 <!-- Filtros rápidos -->
 <div class="d-flex gap-2 mb-4 flex-wrap">
-    <button class="btn btn-sm btn-outline-secondary filtro-btn active" data-filtro="todos">
+    <a href="/ocs?status=todos"
+       class="btn btn-sm btn-outline-secondary {{ 'active' if status_atual == 'todos' }}">
         Todos
-    </button>
-    <button class="btn btn-sm btn-outline-warning filtro-btn" data-filtro="em_andamento">
+    </a>
+    <a href="/ocs?status=em_andamento"
+       class="btn btn-sm btn-outline-warning {{ 'active' if status_atual == 'em_andamento' }}">
         Em Andamento
-    </button>
-    <button class="btn btn-sm btn-outline-success filtro-btn" data-filtro="concluida">
+    </a>
+    <a href="/ocs?status=concluida"
+       class="btn btn-sm btn-outline-success {{ 'active' if status_atual == 'concluida' }}">
         Concluídas
-    </button>
+    </a>
     {% if is_admin %}
-    <button class="btn btn-sm btn-outline-danger filtro-btn" data-filtro="excluida">
+    <a href="/ocs?status=excluida"
+       class="btn btn-sm btn-outline-danger {{ 'active' if status_atual == 'excluida' }}">
         🗑 Excluídas
-    </button>
+    </a>
     {% endif %}
 </div>
 
 <!-- OCs aguardando minha área -->
-{% set minha_lista = lista | selectattr('aguardando_minha_area') | list %}
-{% if minha_lista %}
+{% if pendentes_count %}
 <div class="mb-2" style="font-size:12px; font-weight:700; text-transform:uppercase;
      letter-spacing:.8px; color:#92400e;">
-    🔔 Aguardando sua área ({{ minha_lista | length }})
+    🔔 Aguardando sua área ({{ pendentes_count }})
 </div>
 {% endif %}
 
@@ -44,8 +47,7 @@
 <div class="row g-3" id="lista-ocs">
 
 {% for item in lista %}
-<div class="col-12 card-oc"
-     data-status="{{ 'excluida' if item.oc.excluida else item.oc.status }}">
+<div class="col-12">
     <div class="card border-0 shadow-sm" style="
         border-radius: 12px; overflow: hidden;
         opacity: {{ '0.6' if item.oc.excluida else '1' }};
@@ -159,64 +161,28 @@
 
 </div>
 
-<div id="paginacao"></div>
+{% if paginacao.pages > 1 %}
+<div class="d-flex align-items-center gap-2 flex-wrap mt-3">
+    <small class="text-muted me-1">
+        pág. {{ paginacao.page }}/{{ paginacao.pages }}
+    </small>
+    <a class="btn btn-sm btn-outline-secondary {{ 'disabled' if not paginacao.has_prev }}"
+       href="/ocs?status={{ status_atual }}&page={{ paginacao.prev_num }}">‹ Anterior</a>
+    {% for n in paginacao.iter_pages() %}
+        {% if n %}
+        <a class="btn btn-sm {{ 'btn-primary' if n == paginacao.page else 'btn-outline-secondary' }}"
+           href="/ocs?status={{ status_atual }}&page={{ n }}">{{ n }}</a>
+        {% else %}
+        <span class="px-1">…</span>
+        {% endif %}
+    {% endfor %}
+    <a class="btn btn-sm btn-outline-secondary {{ 'disabled' if not paginacao.has_next }}"
+       href="/ocs?status={{ status_atual }}&page={{ paginacao.next_num }}">Próxima ›</a>
+</div>
+{% endif %}
 
 <div class="mt-4">
     <a href="/dashboard" class="btn btn-secondary">← Voltar</a>
 </div>
-
-<script>
-const PER_PAGE = 20;
-let paginaAtual = 1;
-let filtroAtual = 'todos';
-
-function aplicar() {
-    const todos = Array.from(document.querySelectorAll('.card-oc'));
-    const visiveis = todos.filter(card => {
-        const s = card.dataset.status;
-        {% if not is_admin %}if (s === 'excluida') return false;{% endif %}
-        return filtroAtual === 'todos' || s === filtroAtual;
-    });
-
-    const totalPag = Math.max(1, Math.ceil(visiveis.length / PER_PAGE));
-    if (paginaAtual > totalPag) paginaAtual = totalPag;
-
-    const ini = (paginaAtual - 1) * PER_PAGE;
-    const fim = ini + PER_PAGE;
-
-    todos.forEach(c => c.style.display = 'none');
-    visiveis.forEach((c, i) => c.style.display = (i >= ini && i < fim) ? 'block' : 'none');
-
-    document.getElementById('total_label').textContent =
-        visiveis.length + ' OC(s) registrada(s)';
-
-    const nav = document.getElementById('paginacao');
-    if (totalPag <= 1) { nav.innerHTML = ''; return; }
-
-    let html = '<div class="d-flex align-items-center gap-2 flex-wrap mt-3">';
-    html += `<small class="text-muted me-1">${visiveis.length} OCs — pág. ${paginaAtual}/${totalPag}</small>`;
-    html += `<button class="btn btn-sm btn-outline-secondary" onclick="ir(${paginaAtual-1})" ${paginaAtual===1?'disabled':''}>‹ Anterior</button>`;
-    for (let i = 1; i <= totalPag; i++) {
-        html += `<button class="btn btn-sm ${i===paginaAtual?'btn-primary':'btn-outline-secondary'}" onclick="ir(${i})">${i}</button>`;
-    }
-    html += `<button class="btn btn-sm btn-outline-secondary" onclick="ir(${paginaAtual+1})" ${paginaAtual===totalPag?'disabled':''}>Próxima ›</button>`;
-    html += '</div>';
-    nav.innerHTML = html;
-}
-
-function ir(p) { paginaAtual = p; aplicar(); window.scrollTo({top:0,behavior:'smooth'}); }
-
-document.querySelectorAll('.filtro-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        filtroAtual = this.dataset.filtro;
-        paginaAtual = 1;
-        aplicar();
-    });
-});
-
-aplicar();
-</script>
 
 {% endblock %}

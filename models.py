@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
 
 class OrdemCarregamento(db.Model):
     id                    = db.Column(db.Integer, primary_key=True)
-    numero_oc             = db.Column(db.String(50))
+    numero_oc             = db.Column(db.String(50), unique=True)
     status                = db.Column(db.String(20), default='em_andamento')
     data_criacao          = db.Column(db.DateTime, default=datetime.utcnow)
     # Exclusão suave
@@ -24,6 +24,9 @@ class OrdemCarregamento(db.Model):
     motivo_cancelamento   = db.Column(db.String(30), nullable=True)
     justificativa_exclusao = db.Column(db.Text, nullable=True)
     excluida_por          = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    etapas = db.relationship('EtapaOC', backref='oc', lazy='selectin',
+                              order_by='EtapaOC.id')
 
 
 class EtapaOC(db.Model):
@@ -34,6 +37,9 @@ class EtapaOC(db.Model):
     fim          = db.Column(db.DateTime)
     duracao      = db.Column(db.Integer)
     usuario_id   = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    dados   = db.relationship('DadosEtapa', backref='etapa', lazy='selectin')
+    usuario = db.relationship('User', lazy='joined')
 
 
 class DadosEtapa(db.Model):

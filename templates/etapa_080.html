@@ -12,6 +12,7 @@
 {% include '_contexto.html' %}
 
     <form method="POST" enctype="multipart/form-data" id="form080">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <!-- ════════════════════════════════════════ -->
         <!-- BLOCO 1 — ANTES DO CARREGAMENTO         -->

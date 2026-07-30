@@ -124,6 +124,8 @@
                         onclick="abrirModalExcluir()">🗑 Excluir</button>
             {% endif %}
 
+            <a href="/oc/{{ oc.id }}/resumo" target="_blank"
+               class="btn btn-outline-secondary btn-sm">🖨️ Imprimir</a>
             <a href="/ocs" class="btn btn-outline-secondary btn-sm">← Voltar</a>
         </div>
     </div>
@@ -339,6 +341,7 @@
         </p>
 
         <form method="POST" action="/oc/{{ oc.id }}/excluir">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="mb-3">
                 <label class="form-label fw-bold">
                     Motivo <span class="text-danger">*</span>

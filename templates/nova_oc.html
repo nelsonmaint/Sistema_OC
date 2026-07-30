@@ -7,6 +7,7 @@
 <h2>Nova Ordem de Carregamento</h2>
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 <div class="mb-3">
 <label>Pedido de Venda</label>

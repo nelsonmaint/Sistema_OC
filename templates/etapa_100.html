@@ -15,6 +15,7 @@
     {% endif %}
 
     <form method="POST" enctype="multipart/form-data" id="form100">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="mb-3">
             <label class="form-label fw-bold">A VÁLVULA ENCONTRA-SE FECHADA E LACRADA SEM VAZAMENTO?</label>

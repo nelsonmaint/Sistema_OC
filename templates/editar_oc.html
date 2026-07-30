@@ -12,6 +12,7 @@
 </div>
 
 <form method="POST" style="max-width: 600px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
     <div class="mb-3">
         <label class="form-label fw-bold">Pedido de Venda</label>

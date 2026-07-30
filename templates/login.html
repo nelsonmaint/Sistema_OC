@@ -10,7 +10,12 @@
 
                 <h4 class="text-center mb-4">Login</h4>
 
+                {% if erro %}
+                <div class="alert alert-danger py-2">{{ erro }}</div>
+                {% endif %}
+
                 <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="mb-3">
                         <label>Email</label>

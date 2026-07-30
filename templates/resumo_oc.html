@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumo {{ oc.numero_oc }} — Sistema OC</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1c2434;
+        background: #f0f2f5;
+        margin: 0;
+        padding: 24px;
+    }
+    .folha {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        padding: 32px 40px;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    .acoes { max-width: 900px; margin: 0 auto 14px; display:flex; gap:8px; justify-content:flex-end; }
+    .btn { border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600;
+           border: 1px solid #1c2434; background: #1c2434; color: white; cursor: pointer;
+           text-decoration: none; display:inline-block; }
+    .btn-outline { background: white; color: #1c2434; }
+
+    .cabecalho { display:flex; justify-content:space-between; align-items:flex-start;
+                 border-bottom: 2px solid #1c2434; padding-bottom: 16px; margin-bottom: 20px; }
+    .cabecalho h1 { font-size: 18px; margin: 0 0 2px; }
+    .cabecalho small { color:#6b7280; font-size:12px; }
+    .oc-numero { font-family:'IBM Plex Mono', monospace; font-size: 24px; font-weight:700; text-align:right; }
+    .badge { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px;
+              border-radius:20px; margin-top:4px; }
+    .badge-ok   { background:#dcfce7; color:#16a34a; }
+    .badge-warn { background:#fef9c3; color:#ca8a04; }
+    .badge-off  { background:#fee2e2; color:#dc2626; }
+
+    .contexto-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+                      background:#f8fafc; border:1px solid #e9ecef; border-radius:10px;
+                      padding: 14px 18px; margin-bottom: 26px; }
+    .ctx-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#9ca3af; }
+    .ctx-valor { font-size:13px; font-weight:600; margin-top:2px; }
+
+    .secao-titulo { font-size:12px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.8px; color:#6b7280; margin: 0 0 12px; }
+
+    .etapa { border:1px solid #e9ecef; border-radius:10px; margin-bottom:14px; overflow:hidden;
+             break-inside: avoid; page-break-inside: avoid; }
+    .etapa-topo { display:flex; align-items:center; gap:10px; background:#1c2434; color:white;
+                  padding: 10px 16px; }
+    .etapa-codigo { font-family:'IBM Plex Mono', monospace; font-size:11px;
+                    background: rgba(255,255,255,.15); padding:2px 8px; border-radius:4px; }
+    .etapa-nome { font-weight:700; font-size:13px; flex:1; }
+    .etapa-dur  { font-family:'IBM Plex Mono', monospace; font-size:12px; }
+    .etapa-corpo { padding: 14px 18px; }
+    .etapa-meta { display:flex; gap:24px; font-size:12px; color:#6b7280; margin-bottom:10px; }
+
+    .dados-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; }
+    .dado-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; }
+    .dado-valor { font-size:13px; font-weight:500; }
+
+    .assinaturas { display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; }
+    .assinatura-box { text-align:center; }
+    .assinatura-box img { max-width:180px; max-height:80px; border:1px solid #e9ecef; border-radius:4px; }
+    .assinatura-box div { font-size:10px; color:#9ca3af; margin-top:3px; }
+
+    .fotos { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .fotos img { width:90px; height:70px; object-fit:cover; border:1px solid #e9ecef; border-radius:6px; }
+
+    .rodape { text-align:center; font-size:11px; color:#9ca3af; margin-top:24px;
+              border-top:1px solid #f1f5f9; padding-top:12px; }
+
+    @media print {
+        body { background: white; padding: 0; }
+        .folha { box-shadow:none; border-radius:0; max-width:none; padding: 0; }
+        .acoes { display: none; }
+        .etapa { break-inside: avoid; }
+    }
+</style>
+</head>
+<body>
+
+<div class="acoes no-print">
+    <a href="/oc/{{ oc.id }}" class="btn btn-outline">← Voltar</a>
+    <button class="btn" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+</div>
+
+<div class="folha">
+
+    <div class="cabecalho">
+        <div>
+            <h1>Resumo da Ordem de Carregamento</h1>
+            <small>Chlorum Solutions — Sistema OC</small>
+        </div>
+        <div>
+            <div class="oc-numero">{{ oc.numero_oc }}</div>
+            {% if oc.excluida %}
+                <div style="text-align:right;"><span class="badge badge-off">Cancelada</span></div>
+            {% elif oc.status == 'concluida' %}
+                <div style="text-align:right;"><span class="badge badge-ok">Concluída</span></div>
+            {% else %}
+                <div style="text-align:right;"><span class="badge badge-warn">Em Andamento</span></div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="contexto-grid">
+        <div><div class="ctx-label">Cliente</div><div class="ctx-valor">{{ ctx.cliente }}</div></div>
+        <div><div class="ctx-label">Produto</div><div class="ctx-valor">{{ ctx.produto }}</div></div>
+        <div><div class="ctx-label">Transportadora</div><div class="ctx-valor">{{ ctx.transportadora }}</div></div>
+        <div><div class="ctx-label">Criada em</div><div class="ctx-valor">{{ oc.data_criacao.strftime('%d/%m/%Y %H:%M') }}</div></div>
+        <div><div class="ctx-label">Motorista</div><div class="ctx-valor">{{ ctx.motorista }}</div></div>
+        <div><div class="ctx-label">Placa Carreta</div><div class="ctx-valor">{{ ctx.placa_carreta }}</div></div>
+        <div><div class="ctx-label">Placa Cavalo</div><div class="ctx-valor">{{ ctx.placa_cavalo }}</div></div>
+    </div>
+
+    <div class="secao-titulo">Histórico de Etapas</div>
+
+    {% for etapa in etapas %}
+    {% set d = dados.get(etapa.codigo_etapa, []) %}
+    {% set meta = TEMPO_META.get(etapa.codigo_etapa) %}
+    <div class="etapa">
+        <div class="etapa-topo">
+            <span class="etapa-codigo">{{ etapa.codigo_etapa }}</span>
+            <span class="etapa-nome">{{ ETAPAS.get(etapa.codigo_etapa, '—') }}</span>
+            <span class="etapa-dur">
+                {% if etapa.duracao is not none %}
+                    {{ etapa.duracao }} min{% if meta %} / meta {{ meta }} min{% endif %}
+                {% else %}
+                    Em andamento
+                {% endif %}
+            </span>
+        </div>
+        <div class="etapa-corpo">
+            <div class="etapa-meta">
+                <span>Início: {{ etapa.inicio.strftime('%d/%m/%Y %H:%M') if etapa.inicio else '—' }}</span>
+                <span>Fim: {{ etapa.fim.strftime('%d/%m/%Y %H:%M') if etapa.fim else '—' }}</span>
+            </div>
+
+            {% set campos_normais = d | rejectattr('campo', 'in', CAMPOS_ASSINATURAS)
+                                       | rejectattr('campo', 'in', CAMPOS_FOTOS) | list %}
+            {% if campos_normais %}
+            <div class="dados-grid">
+                {% for r in campos_normais %}
+                <div>
+                    <div class="dado-label">{{ LABELS_CAMPOS.get(r.campo, r.campo.replace('_',' ').title()) }}</div>
+                    <div class="dado-valor">{{ r.valor or '—' }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% set ass_list = d | selectattr('campo', 'in', CAMPOS_ASSINATURAS) | selectattr('valor') | list %}
+            {% if ass_list %}
+            <div class="assinaturas">
+                {% for r in ass_list %}
+                <div class="assinatura-box">
+                    <img src="{{ r.valor }}" onerror="this.style.display='none'">
+                    <div>{{ LABELS_ASS.get(r.campo, r.campo) }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% set foto_list = d | selectattr('campo', 'in', CAMPOS_FOTOS) | selectattr('valor') | list %}
+            {% if foto_list %}
+            <div class="fotos">
+                {% for r in foto_list %}
+                <img src="/{{ r.valor }}" onerror="this.style.display='none'">
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="rodape">
+        Documento gerado automaticamente pelo Sistema OC em {{ gerado_em.strftime('%d/%m/%Y às %H:%M') }} UTC.
+    </div>
+
+</div>
+
+</body>
+</html>

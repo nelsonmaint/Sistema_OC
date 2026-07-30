@@ -47,6 +47,7 @@
                 <form method="POST"
                       action="/admin/usuarios/{{ u.id }}/excluir"
                       onsubmit="return confirm('Excluir {{ u.nome }}?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit"
                             class="btn btn-sm btn-outline-danger">
                         Excluir
