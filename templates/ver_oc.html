@@ -3,52 +3,52 @@
 
 <style>
 .oc-header {
-    background: #f8fafc; border-radius: 12px;
+    background: var(--fog); border-radius: 4px;
     padding: 20px 24px; margin-bottom: 24px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border);
     display: flex; flex-wrap: wrap;
     gap: 20px; align-items: center;
     justify-content: space-between;
 }
 .oc-header-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 26px; font-weight: 700; color: #1c2434;
+    font-family: var(--font-mono);
+    font-size: 26px; font-weight: 700; color: var(--deep);
 }
-.oc-header-meta { font-size: 13px; color: #6b7280; margin-top: 2px; }
+.oc-header-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
 .proxima-box {
-    background: #eff6ff; border: 1px solid #bfdbfe;
-    border-radius: 10px; padding: 16px 20px; margin-bottom: 24px;
+    background: rgba(28,83,164,.06); border: 1px solid rgba(28,83,164,.3);
+    border-radius: 4px; padding: 16px 20px; margin-bottom: 24px;
 }
-.proxima-box.em-andamento { background: #fefce8; border-color: #fde68a; }
-.proxima-box.concluida    { background: #f0fdf4; border-color: #bbf7d0; }
+.proxima-box.em-andamento { background: rgba(180,118,42,.08); border-color: rgba(180,118,42,.35); }
+.proxima-box.concluida    { background: rgba(47,122,82,.08); border-color: rgba(47,122,82,.35); }
 
 /* ── Acordeão ── */
-.etapa-acordeao { margin-bottom: 10px; border-radius: 10px;
-    overflow: hidden; border: 1px solid #e9ecef; }
+.etapa-acordeao { margin-bottom: 10px; border-radius: 4px;
+    overflow: hidden; border: 1px solid var(--border); }
 .etapa-acordeao-header {
     display: flex; align-items: center; gap: 12px;
     padding: 14px 18px; cursor: pointer;
-    background: #f8fafc; user-select: none; transition: background .15s;
+    background: var(--fog); user-select: none; transition: background .15s;
 }
-.etapa-acordeao-header:hover { background: #f1f5f9; }
-.etapa-acordeao-header.aberto { background: #1c2434; color: white; }
+.etapa-acordeao-header:hover { background: var(--border); }
+.etapa-acordeao-header.aberto { background: var(--deep); color: white; }
 .etapa-codigo-badge {
-    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    font-family: var(--font-mono); font-size: 12px;
     background: rgba(0,0,0,.08); padding: 3px 8px;
     border-radius: 4px; flex-shrink: 0;
 }
 .etapa-acordeao-header.aberto .etapa-codigo-badge { background: rgba(255,255,255,.15); }
 .etapa-titulo { flex: 1; font-weight: 600; font-size: 14px; }
-.etapa-duracao { font-family:'IBM Plex Mono',monospace; font-size:13px;
-    padding: 2px 8px; border-radius: 6px; }
-.dur-ok      { background:#dcfce7; color:#16a34a; }
-.dur-critico { background:#fee2e2; color:#dc2626; }
-.dur-na      { background:#f1f5f9; color:#9ca3af; }
+.etapa-duracao { font-family: var(--font-mono); font-size:13px;
+    padding: 2px 8px; border-radius: 4px; }
+.dur-ok      { background: rgba(47,122,82,.14); color: var(--good); }
+.dur-critico { background: rgba(162,59,51,.12); color: var(--danger); }
+.dur-na      { background: var(--fog); color: var(--muted); }
 .etapa-chevron { font-size:12px; margin-left:4px; transition:transform .2s; }
 .etapa-acordeao-header.aberto .etapa-chevron { transform:rotate(180deg); }
 .etapa-corpo { display:none; padding:20px; background:white;
-    border-top:1px solid #e9ecef; }
+    border-top:1px solid var(--border); }
 .etapa-corpo.aberto { display:block; }
 
 /* ── Dados ── */
@@ -57,36 +57,36 @@
     gap: 14px; margin-bottom: 16px;
 }
 .dado-label { font-size:10px; font-weight:700; text-transform:uppercase;
-    letter-spacing:.7px; color:#9ca3af; margin-bottom:3px; }
-.dado-valor { font-size:14px; color:#1c2434; font-weight:500; }
-.dado-valor.ok  { color:#16a34a; font-weight:700; }
-.dado-valor.nao { color:#dc2626; font-weight:700; }
-.dado-valor.na  { color:#9ca3af; }
+    letter-spacing:.7px; color: var(--muted); margin-bottom:3px; }
+.dado-valor { font-size:14px; color: var(--deep); font-weight:500; }
+.dado-valor.ok  { color: var(--good); font-weight:700; }
+.dado-valor.nao { color: var(--danger); font-weight:700; }
+.dado-valor.na  { color: var(--muted); }
 
 .secao-titulo { font-size:11px; font-weight:700; text-transform:uppercase;
-    letter-spacing:.8px; color:#6b7280; border-bottom:1px solid #f1f5f9;
+    letter-spacing:.8px; color: var(--muted); border-bottom:1px solid var(--fog);
     padding-bottom:6px; margin:18px 0 12px; }
 
 /* ── Assinaturas ── */
 .assinaturas-grid { display:flex; flex-wrap:wrap; gap:16px; margin-bottom:12px; }
-.assinatura-box { background:#f8fafc; border:1px solid #e9ecef;
-    border-radius:8px; padding:10px 14px; text-align:center; }
+.assinatura-box { background: var(--fog); border:1px solid var(--border);
+    border-radius:4px; padding:10px 14px; text-align:center; }
 .assinatura-label { font-size:11px; font-weight:700; text-transform:uppercase;
-    letter-spacing:.7px; color:#9ca3af; margin-bottom:8px; }
-.assinatura-img { max-width:220px; max-height:100px; border:1px solid #e9ecef;
+    letter-spacing:.7px; color: var(--muted); margin-bottom:8px; }
+.assinatura-img { max-width:220px; max-height:100px; border:1px solid var(--border);
     border-radius:4px; background:white; display:block; }
 
 /* ── Fotos ── */
 .fotos-grid { display:flex; flex-wrap:wrap; gap:10px; margin-top:4px; }
-.foto-thumb { width:100px; height:80px; object-fit:cover; border-radius:6px;
-    border:1px solid #e9ecef; cursor:pointer; transition:transform .15s; }
+.foto-thumb { width:100px; height:80px; object-fit:cover; border-radius:4px;
+    border:1px solid var(--border); cursor:pointer; transition:transform .15s; }
 .foto-thumb:hover { transform:scale(1.05); }
 
 /* ── Lightbox ── */
 .lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85);
     z-index:2000; align-items:center; justify-content:center; }
 .lightbox.ativo { display:flex; }
-.lightbox img { max-width:90vw; max-height:90vh; border-radius:8px; }
+.lightbox img { max-width:90vw; max-height:90vh; border-radius:4px; }
 .lightbox-fechar { position:absolute; top:20px; right:24px; color:white;
     font-size:32px; cursor:pointer; background:none; border:none; line-height:1; }
 
@@ -95,7 +95,7 @@
     background:rgba(0,0,0,.5); z-index:1000;
     align-items:center; justify-content:center; }
 .modal-excluir-overlay.ativo { display:flex; }
-.modal-excluir-box { background:white; border-radius:14px; padding:28px;
+.modal-excluir-box { background:white; border-radius:4px; padding:28px;
     width:90%; max-width:480px; }
 </style>
 
@@ -112,20 +112,20 @@
 
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             {% if oc.status == 'concluida' %}
-                <span class="badge bg-success" style="font-size:13px;">✔ Concluída</span>
+                <span class="badge bg-success" style="font-size:13px;">Concluída</span>
             {% else %}
                 <span class="badge bg-warning text-dark" style="font-size:13px;">Em Andamento</span>
             {% endif %}
 
             {% if current_user.is_admin %}
                 <a href="/oc/{{ oc.id }}/editar"
-                   class="btn btn-sm btn-outline-primary">✏️ Editar</a>
+                   class="btn btn-sm btn-outline-primary">Editar</a>
                 <button class="btn btn-sm btn-outline-danger"
-                        onclick="abrirModalExcluir()">🗑 Excluir</button>
+                        onclick="abrirModalExcluir()">Excluir</button>
             {% endif %}
 
             <a href="/oc/{{ oc.id }}/resumo" target="_blank"
-               class="btn btn-outline-secondary btn-sm">🖨️ Imprimir</a>
+               class="btn btn-outline-secondary btn-sm">Imprimir</a>
             <a href="/ocs" class="btn btn-outline-secondary btn-sm">← Voltar</a>
         </div>
     </div>
@@ -133,21 +133,21 @@
     <!-- ── Check-in Portaria (etapa paralela) — só mostra quando pendente/em andamento ── -->
     {% if not oc.excluida and checkin_status != 'concluido' %}
     <div style="
-        background: {% if checkin_status == 'em_andamento' %}#fefce8{% else %}#f8fafc{% endif %};
-        border: 1px solid {% if checkin_status == 'em_andamento' %}#fde68a{% else %}#e9ecef{% endif %};
-        border-left: 4px solid {% if checkin_status == 'em_andamento' %}#f59e0b{% else %}#9ca3af{% endif %};
-        border-radius: 10px; padding: 14px 20px; margin-bottom: 20px;
+        background: {% if checkin_status == 'em_andamento' %}rgba(180,118,42,.08){% else %}var(--fog){% endif %};
+        border: 1px solid {% if checkin_status == 'em_andamento' %}rgba(180,118,42,.35){% else %}var(--border){% endif %};
+        border-left: 4px solid {% if checkin_status == 'em_andamento' %}var(--warn){% else %}var(--muted){% endif %};
+        border-radius: 4px; padding: 14px 20px; margin-bottom: 20px;
         display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
     ">
         <div>
             <div style="font-size:11px; font-weight:700; text-transform:uppercase;
-                        letter-spacing:.7px; color:#6b7280; margin-bottom:4px;">
+                        letter-spacing:.7px; color: var(--muted); margin-bottom:4px;">
                 Check-in Portaria — Etapa 040
             </div>
             {% if checkin_status == 'em_andamento' %}
-                <div style="font-weight:700; color:#ca8a04; font-size:14px;">Em andamento...</div>
+                <div style="font-weight:700; color: var(--warn); font-size:14px;">Em andamento...</div>
             {% else %}
-                <div style="color:#6b7280; font-size:14px;">Motorista ainda não realizou o check-in</div>
+                <div style="color: var(--muted); font-size:14px;">Motorista ainda não realizou o check-in</div>
             {% endif %}
         </div>
         {% if pode_iniciar_checkin %}
@@ -165,12 +165,12 @@
     <!-- ── Próxima ação ── -->
     {% if oc.status == 'concluida' %}
         <div class="proxima-box concluida mb-4">
-            <strong>✔ OC Concluída com sucesso!</strong>
+            <strong>OC Concluída com sucesso!</strong>
         </div>
     {% elif em_andamento %}
         <div class="proxima-box em-andamento mb-4">
             <div style="font-size:12px; font-weight:700; text-transform:uppercase;
-                        letter-spacing:.7px; color:#92400e; margin-bottom:4px;">
+                        letter-spacing:.7px; color: var(--warn); margin-bottom:4px;">
                 Etapa em Andamento
             </div>
             <strong>{{ em_andamento.codigo_etapa }} — {{ ETAPAS[em_andamento.codigo_etapa] }}</strong>
@@ -182,15 +182,15 @@
     {% elif proxima %}
         <div class="proxima-box mb-4">
             <div style="font-size:12px; font-weight:700; text-transform:uppercase;
-                        letter-spacing:.7px; color:#1e40af; margin-bottom:4px;">
+                        letter-spacing:.7px; color: var(--chlorum); margin-bottom:4px;">
                 Próxima Etapa
             </div>
             <strong>{{ proxima }} — {{ ETAPAS[proxima] }}</strong>
-            <span style="color:#6b7280; font-size:13px;">({{ AREAS[proxima] }})</span>
+            <span style="color: var(--muted); font-size:13px;">({{ AREAS[proxima] }})</span>
             <div style="margin-top:8px;">
                 {% if proxima == '050' and checkin_status != 'concluido' %}
-                    <span style="font-size:13px; color:#ca8a04; font-weight:600;">
-                        ⏳ Aguardando check-in da Portaria
+                    <span style="font-size:13px; color: var(--warn); font-weight:600;">
+                        Aguardando check-in da Portaria
                     </span>
                 {% elif proxima in permitidas %}
                     <a href="/oc/{{ oc.id }}/iniciar/{{ proxima }}"
@@ -206,7 +206,7 @@
 
     <!-- ── Histórico ── -->
     <div style="font-size:13px; font-weight:700; text-transform:uppercase;
-                letter-spacing:.8px; color:#6b7280; margin-bottom:14px;">
+                letter-spacing:.8px; color: var(--muted); margin-bottom:14px;">
         Histórico de Etapas
     </div>
 
@@ -264,7 +264,7 @@
                 <div><div class="dado-label">Duração</div>
                      <div class="dado-valor {{ 'nao' if (meta and etapa.duracao and etapa.duracao > meta) else 'ok' if etapa.duracao else '' }}">
                         {{ etapa.duracao ~ ' min' if etapa.duracao is not none else '—' }}
-                        {% if meta %}<span style="font-size:11px;color:#9ca3af;">(meta {{ meta }}min)</span>{% endif %}
+                        {% if meta %}<span style="font-size:11px;color:var(--muted);">(meta {{ meta }}min)</span>{% endif %}
                      </div></div>
             </div>
 
@@ -334,8 +334,8 @@
 <div class="modal-excluir-overlay" id="modal_excluir"
      onclick="fecharModalExcluir(event)">
     <div class="modal-excluir-box">
-        <h4 style="color:#dc2626; margin-bottom:8px;">🗑 Excluir {{ oc.numero_oc }}</h4>
-        <p style="font-size:13px; color:#6b7280;">
+        <h4 style="color: var(--danger); margin-bottom:8px;">Excluir {{ oc.numero_oc }}</h4>
+        <p style="font-size:13px; color: var(--muted);">
             Esta ação é irreversível. Todos os dados e etapas desta OC serão
             permanentemente removidos.
         </p>

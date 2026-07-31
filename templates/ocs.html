@@ -30,7 +30,7 @@
     {% if is_admin %}
     <a href="/ocs?status=excluida"
        class="btn btn-sm btn-outline-danger {{ 'active' if status_atual == 'excluida' }}">
-        🗑 Excluídas
+        Excluídas
     </a>
     {% endif %}
 </div>
@@ -38,8 +38,8 @@
 <!-- OCs aguardando minha área -->
 {% if pendentes_count %}
 <div class="mb-2" style="font-size:12px; font-weight:700; text-transform:uppercase;
-     letter-spacing:.8px; color:#92400e;">
-    🔔 Aguardando sua área ({{ pendentes_count }})
+     letter-spacing:.8px; color: var(--warn); font-family: var(--font-mono);">
+    Aguardando sua área ({{ pendentes_count }})
 </div>
 {% endif %}
 
@@ -48,18 +48,18 @@
 
 {% for item in lista %}
 <div class="col-12">
-    <div class="card border-0 shadow-sm" style="
-        border-radius: 12px; overflow: hidden;
+    <div class="card border-0" style="
+        border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
         opacity: {{ '0.6' if item.oc.excluida else '1' }};
     ">
         <div style="display:flex;">
             <!-- Faixa lateral de cor -->
             <div style="
                 width: 5px; flex-shrink: 0;
-                background: {% if item.oc.excluida %}#9ca3af
-                            {% elif item.oc.status == 'concluida' %}#16a34a
-                            {% elif item.aguardando_minha_area %}#f59e0b
-                            {% else %}#3b82f6{% endif %};
+                background: {% if item.oc.excluida %}var(--muted)
+                            {% elif item.oc.status == 'concluida' %}var(--good)
+                            {% elif item.aguardando_minha_area %}var(--warn)
+                            {% else %}var(--chlorum){% endif %};
             "></div>
 
             <div class="card-body py-3 px-4 w-100">
@@ -67,8 +67,8 @@
 
                     <!-- Nº e Data -->
                     <div class="col-md-2">
-                        <div class="fw-bold" style="font-size:17px; color:#1c2434;
-                             font-family:'IBM Plex Mono',monospace;">
+                        <div class="fw-bold" style="font-size:17px; color: var(--deep);
+                             font-family: var(--font-mono);">
                             {{ item.oc.numero_oc }}
                         </div>
                         <div class="text-muted" style="font-size:12px;">
@@ -80,8 +80,8 @@
                     <!-- Criado por -->
                     <div class="col-md-2">
                         <div style="font-size:11px; text-transform:uppercase;
-                             letter-spacing:.8px; color:#9ca3af;">Criado por</div>
-                        <div style="font-size:14px; font-weight:600; color:#374151;">
+                             letter-spacing:.8px; color: var(--muted);">Criado por</div>
+                        <div style="font-size:14px; font-weight:600; color: var(--ink);">
                             {{ item.criador }}
                         </div>
                     </div>
@@ -89,8 +89,8 @@
                     <!-- Cliente / Produto -->
                     <div class="col-md-3">
                         <div style="font-size:11px; text-transform:uppercase;
-                             letter-spacing:.8px; color:#9ca3af;">Cliente / Produto</div>
-                        <div style="font-size:14px; font-weight:600; color:#374151;">
+                             letter-spacing:.8px; color: var(--muted);">Cliente / Produto</div>
+                        <div style="font-size:14px; font-weight:600; color: var(--ink);">
                             {{ item.cliente }}
                         </div>
                         <div class="text-muted" style="font-size:12px;">
@@ -101,24 +101,24 @@
                     <!-- Etapa atual -->
                     <div class="col-md-3">
                         <div style="font-size:11px; text-transform:uppercase;
-                             letter-spacing:.8px; color:#9ca3af;">Etapa atual</div>
+                             letter-spacing:.8px; color: var(--muted);">Etapa atual</div>
                         {% if item.oc.excluida %}
-                            <span style="font-size:13px; color:#9ca3af;">
-                                🗑 Excluída em
+                            <span style="font-size:13px; color: var(--muted);">
+                                Excluída em
                                 {{ item.oc.data_exclusao.strftime('%d/%m/%Y') if item.oc.data_exclusao else '—' }}
                             </span>
                             {% if item.oc.justificativa_exclusao %}
-                            <div style="font-size:11px; color:#9ca3af; font-style:italic;">
+                            <div style="font-size:11px; color: var(--muted); font-style:italic;">
                                 "{{ item.oc.justificativa_exclusao }}"
                             </div>
                             {% endif %}
                         {% elif item.oc.status == 'concluida' %}
-                            <span class="badge bg-success" style="font-size:13px;">✔ Concluída</span>
+                            <span class="badge bg-success" style="font-size:13px;">Concluída</span>
                         {% else %}
-                            <div style="font-size:14px; font-weight:600; color:#1c2434;">
+                            <div style="font-size:14px; font-weight:600; color: var(--deep);">
                                 {{ item.etapa_codigo }} — {{ item.etapa_nome }}
                             </div>
-                            <div style="font-size:12px; color:#6b7280;">
+                            <div style="font-size:12px; color: var(--muted);">
                                 {{ item.etapa_area }}
                             </div>
                         {% endif %}
@@ -131,14 +131,14 @@
                         {% elif item.oc.status == 'concluida' %}
                             <span class="badge bg-success mb-1">Concluída</span>
                         {% elif item.aguardando_minha_area %}
-                            <span class="badge bg-warning text-dark mb-1">⚡ Aguardando você</span>
+                            <span class="badge bg-warning text-dark mb-1">Aguardando você</span>
                         {% else %}
                             <span class="badge bg-primary mb-1">Em Andamento</span>
                         {% endif %}
                         <br>
                         {% if item.checkin != 'concluido' and not item.oc.excluida and item.oc.status != 'concluida' %}
-                            <span class="badge mb-1" style="background:#fef3c7;color:#92400e;">
-                                ⏳ Sem check-in
+                            <span class="badge mb-1" style="background: rgba(180,118,42,.14); color: var(--warn);">
+                                Sem check-in
                             </span>
                         {% endif %}
                         <br>
@@ -153,7 +153,6 @@
 </div>
 {% else %}
 <div class="col-12 text-center text-muted py-5">
-    <div style="font-size:48px;">📋</div>
     <p class="mt-2">Nenhuma OC registrada ainda.</p>
     <a href="/oc/nova" class="btn btn-primary">Criar primeira OC</a>
 </div>

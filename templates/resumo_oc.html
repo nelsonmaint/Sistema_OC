@@ -4,12 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Resumo {{ oc.numero_oc }} — Sistema OC</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
     * { box-sizing: border-box; }
     body {
-        font-family: 'Segoe UI', Arial, sans-serif;
-        color: #1c2434;
-        background: #f0f2f5;
+        font-family: 'IBM Plex Sans', sans-serif;
+        color: #132B4E;
+        background: #F2F2F2;
         margin: 0;
         padding: 24px;
     }
@@ -17,62 +22,64 @@
         max-width: 900px;
         margin: 0 auto;
         background: white;
-        border-radius: 10px;
+        border-radius: 4px;
         padding: 32px 40px;
         box-shadow: 0 1px 4px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.06);
     }
 
     .acoes { max-width: 900px; margin: 0 auto 14px; display:flex; gap:8px; justify-content:flex-end; }
-    .btn { border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600;
-           border: 1px solid #1c2434; background: #1c2434; color: white; cursor: pointer;
+    .btn { border-radius: 4px; padding: 7px 16px; font-size: 13px; font-weight: 600;
+           border: 1px solid #132B4E; background: #132B4E; color: white; cursor: pointer;
            text-decoration: none; display:inline-block; }
-    .btn-outline { background: white; color: #1c2434; }
+    .btn-outline { background: white; color: #132B4E; }
 
     .cabecalho { display:flex; justify-content:space-between; align-items:flex-start;
-                 border-bottom: 2px solid #1c2434; padding-bottom: 16px; margin-bottom: 20px; }
-    .cabecalho h1 { font-size: 18px; margin: 0 0 2px; }
-    .cabecalho small { color:#6b7280; font-size:12px; }
+                 border-bottom: 2px solid #132B4E; padding-bottom: 16px; margin-bottom: 20px; }
+    .cabecalho h1 { font-family: 'Big Shoulders Display', sans-serif; font-weight: 800;
+                    text-transform: uppercase; letter-spacing: .01em;
+                    font-size: 20px; margin: 0 0 2px; color: #132B4E; }
+    .cabecalho small { color: #5B6472; font-size:12px; }
     .oc-numero { font-family:'IBM Plex Mono', monospace; font-size: 24px; font-weight:700; text-align:right; }
     .badge { display:inline-block; font-size:11px; font-weight:700; padding:3px 10px;
               border-radius:20px; margin-top:4px; }
-    .badge-ok   { background:#dcfce7; color:#16a34a; }
-    .badge-warn { background:#fef9c3; color:#ca8a04; }
-    .badge-off  { background:#fee2e2; color:#dc2626; }
+    .badge-ok   { background: rgba(47,122,82,.14); color: #2F7A52; }
+    .badge-warn { background: rgba(180,118,42,.14); color: #B4762A; }
+    .badge-off  { background: rgba(162,59,51,.12); color: #A23B33; }
 
     .contexto-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
-                      background:#f8fafc; border:1px solid #e9ecef; border-radius:10px;
+                      background: #F2F2F2; border:1px solid #DCE2E8; border-radius:4px;
                       padding: 14px 18px; margin-bottom: 26px; }
-    .ctx-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#9ca3af; }
+    .ctx-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color: #5B6472; }
     .ctx-valor { font-size:13px; font-weight:600; margin-top:2px; }
 
     .secao-titulo { font-size:12px; font-weight:700; text-transform:uppercase;
-                    letter-spacing:.8px; color:#6b7280; margin: 0 0 12px; }
+                    letter-spacing:.8px; color: #5B6472; margin: 0 0 12px; }
 
-    .etapa { border:1px solid #e9ecef; border-radius:10px; margin-bottom:14px; overflow:hidden;
+    .etapa { border:1px solid #DCE2E8; border-radius:4px; margin-bottom:14px; overflow:hidden;
              break-inside: avoid; page-break-inside: avoid; }
-    .etapa-topo { display:flex; align-items:center; gap:10px; background:#1c2434; color:white;
+    .etapa-topo { display:flex; align-items:center; gap:10px; background: #132B4E; color:white;
                   padding: 10px 16px; }
     .etapa-codigo { font-family:'IBM Plex Mono', monospace; font-size:11px;
                     background: rgba(255,255,255,.15); padding:2px 8px; border-radius:4px; }
     .etapa-nome { font-weight:700; font-size:13px; flex:1; }
     .etapa-dur  { font-family:'IBM Plex Mono', monospace; font-size:12px; }
     .etapa-corpo { padding: 14px 18px; }
-    .etapa-meta { display:flex; gap:24px; font-size:12px; color:#6b7280; margin-bottom:10px; }
+    .etapa-meta { display:flex; gap:24px; font-size:12px; color: #5B6472; margin-bottom:10px; }
 
     .dados-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; }
-    .dado-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#9ca3af; }
+    .dado-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color: #5B6472; }
     .dado-valor { font-size:13px; font-weight:500; }
 
     .assinaturas { display:flex; flex-wrap:wrap; gap:14px; margin-top:12px; }
     .assinatura-box { text-align:center; }
-    .assinatura-box img { max-width:180px; max-height:80px; border:1px solid #e9ecef; border-radius:4px; }
-    .assinatura-box div { font-size:10px; color:#9ca3af; margin-top:3px; }
+    .assinatura-box img { max-width:180px; max-height:80px; border:1px solid #DCE2E8; border-radius:4px; }
+    .assinatura-box div { font-size:10px; color: #5B6472; margin-top:3px; }
 
     .fotos { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-    .fotos img { width:90px; height:70px; object-fit:cover; border:1px solid #e9ecef; border-radius:6px; }
+    .fotos img { width:90px; height:70px; object-fit:cover; border:1px solid #DCE2E8; border-radius:4px; }
 
-    .rodape { text-align:center; font-size:11px; color:#9ca3af; margin-top:24px;
-              border-top:1px solid #f1f5f9; padding-top:12px; }
+    .rodape { text-align:center; font-size:11px; color: #5B6472; margin-top:24px;
+              border-top:1px solid #F2F2F2; padding-top:12px; }
 
     @media print {
         body { background: white; padding: 0; }
@@ -86,7 +93,7 @@
 
 <div class="acoes no-print">
     <a href="/oc/{{ oc.id }}" class="btn btn-outline">← Voltar</a>
-    <button class="btn" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+    <button class="btn" onclick="window.print()">Imprimir / Salvar PDF</button>
 </div>
 
 <div class="folha">

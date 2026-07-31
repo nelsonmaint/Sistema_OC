@@ -39,6 +39,7 @@ app.register_blueprint(etapas_bp)
 app.register_blueprint(dashboard_bp)
 
 
+
 @app.errorhandler(403)
 def acesso_negado(e):
     return render_template('403.html'), 403
