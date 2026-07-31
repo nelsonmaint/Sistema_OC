@@ -35,4 +35,23 @@ def logout():
 @bp.route('/dashboard')
 @login_required
 def dashboard():
-    return redirect(url_for('dashboard.acompanhamento'))
+    from datetime import datetime
+    from models import OrdemCarregamento
+    from helpers import _pendencias_usuario
+
+    em_andamento = OrdemCarregamento.query.filter_by(
+        status='em_andamento', excluida=False).count()
+
+    pendencias = _pendencias_usuario()
+
+    hoje = datetime.utcnow().date()
+    concluidas_hoje = 0
+    for oc in OrdemCarregamento.query.filter_by(status='concluida', excluida=False).all():
+        e120 = next((e for e in oc.etapas if e.codigo_etapa == '120'), None)
+        if e120 and e120.fim and e120.fim.date() == hoje:
+            concluidas_hoje += 1
+
+    return render_template('dashboard.html',
+                           em_andamento=em_andamento,
+                           pendencias=pendencias,
+                           concluidas_hoje=concluidas_hoje)

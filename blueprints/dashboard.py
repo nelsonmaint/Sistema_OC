@@ -36,9 +36,17 @@ def acompanhamento():
 
         # 040 check-in paralelo
         e040 = etapas_dict.get('040')
-        placa_carreta = '—'
+        placa_carreta = placa_cavalo = motorista = '—'
         if e040:
             placa_carreta = _campo_valor(e040.dados, 'placa_carreta')
+            placa_cavalo  = _campo_valor(e040.dados, 'placa_cavalo')
+            motorista     = _campo_valor(e040.dados, 'motorista_nome')
+
+        # 020 PCP — número do lote
+        e020 = etapas_dict.get('020')
+        lote = '—'
+        if e020:
+            lote = _campo_valor(e020.dados, 'numero_lote')
 
         checkin_ts = None
         checkin_espera_fixa = None
@@ -87,6 +95,7 @@ def acompanhamento():
             'id': oc.id, 'numero_oc': oc.numero_oc,
             'cliente': cliente, 'produto': produto,
             'transportadora': transportadora, 'placa_carreta': placa_carreta,
+            'placa_cavalo': placa_cavalo, 'motorista': motorista, 'lote': lote,
             'etapa_codigo': etapa_codigo, 'etapa_nome': etapa_nome,
             'etapa_area': etapa_area,
             'criacao_ts':           calendar.timegm(oc.data_criacao.timetuple()),

@@ -2,43 +2,58 @@
 
 {% block content %}
 
-<h2 class="mb-1">Bem-vindo, {{ current_user.nome or current_user.email }}!</h2>
-<p class="text-muted mb-4">{{ current_user.area }} — Sistema de Ordem de Carregamento</p>
+<style>
+.painel-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 22px; }
+.painel-stat-tile { background: var(--paper); border: 1px solid var(--border); border-radius: 4px; padding: 20px 22px; }
+.painel-stat-value {
+    font-family: var(--font-display); font-weight: 900; font-size: 38px;
+    color: var(--deep); line-height: 1; font-variant-numeric: tabular-nums;
+}
+.painel-stat-label { font-size: 12px; color: var(--muted); margin-top: 8px; font-weight: 500; }
 
-<!-- ── Caixa de pendências ── -->
+.painel-alert {
+    background: var(--paper); border: 1px solid var(--border); border-left: 3px solid var(--warn);
+    border-radius: 4px; padding: 16px 20px; margin-bottom: 22px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.painel-alert-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.painel-alert-sub { font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+.painel-alert-sub a { color: var(--chlorum); font-weight: 600; text-decoration: none; margin-right: 10px; font-family: var(--font-mono); }
+</style>
+
+<h2 style="font-size: 22px; margin-bottom: 2px;">Bem-vindo, {{ current_user.nome or current_user.email }}</h2>
+<p style="font-size: 13px; color: var(--muted); margin: 0 0 24px;">{{ current_user.area }} — Sistema de Ordem de Carregamento</p>
+
+<div class="painel-stat-grid">
+    <div class="painel-stat-tile">
+        <div class="painel-stat-value">{{ em_andamento }}</div>
+        <div class="painel-stat-label">OCs em andamento</div>
+    </div>
+    {% if not current_user.is_admin %}
+    <div class="painel-stat-tile">
+        <div class="painel-stat-value">{{ pendencias|length }}</div>
+        <div class="painel-stat-label">Aguardando {{ current_user.area }}</div>
+    </div>
+    {% endif %}
+    <div class="painel-stat-tile">
+        <div class="painel-stat-value">{{ concluidas_hoje }}</div>
+        <div class="painel-stat-label">Concluídas hoje</div>
+    </div>
+</div>
+
 {% if pendencias %}
-<div style="
-    background: #fefce8;
-    border: 2px solid #fde68a;
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-">
-    <div style="font-size: 32px; line-height:1;">🔔</div>
+<div class="painel-alert">
     <div style="flex:1;">
-        <div style="font-weight:700; font-size:16px; color:#92400e;">
-            {{ pendencias|length }} OC{{ 's' if pendencias|length > 1 }} aguardando sua área
-        </div>
-        <div style="font-size:13px; color:#a16207; margin-top:4px;">
+        <div class="painel-alert-title">{{ pendencias|length }} OC{{ 's' if pendencias|length > 1 }} aguardando {{ current_user.area }}</div>
+        <div class="painel-alert-sub">
             {% for p in pendencias %}
-                <a href="/oc/{{ p.id }}"
-                   style="color:#92400e; font-weight:600; margin-right:10px;">
-                    {{ p.numero_oc }}
-                </a>
+                <a href="/oc/{{ p.id }}">{{ p.numero_oc }}</a>
             {% endfor %}
         </div>
     </div>
-    <a href="/ocs" class="btn btn-sm btn-warning" style="white-space:nowrap;">
-        Ver todas →
-    </a>
+    <a href="/ocs" class="btn btn-sm btn-outline-secondary">Ver todas</a>
 </div>
 {% endif %}
-
-<hr>
 
 <div class="d-flex flex-wrap gap-2">
 
@@ -47,26 +62,22 @@
     </a>
 
     <a href="/ocs" class="btn btn-outline-secondary">
-        📋 Ver OCs
+        Ver OCs
     </a>
 
     <a href="/dashboard/gerencial" class="btn btn-outline-secondary">
-        📊 Dashboard Gerencial
+        Dashboard Gerencial
     </a>
 
     <a href="/acompanhamento" class="btn btn-outline-secondary">
-        🟢 Acompanhamento ao Vivo
+        Acompanhamento ao Vivo
     </a>
 
     {% if current_user.is_admin %}
-    <a href="/admin/usuarios" class="btn btn-outline-dark">
-        👥 Gerenciar Usuários
+    <a href="/admin/usuarios" class="btn btn-outline-secondary">
+        Gerenciar Usuários
     </a>
     {% endif %}
-
-    <a href="/logout" class="btn btn-danger ms-auto">
-        Sair
-    </a>
 
 </div>
 

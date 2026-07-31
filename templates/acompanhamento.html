@@ -2,189 +2,329 @@
 {% block content %}
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
-.acomp-root { font-family: 'IBM Plex Sans', sans-serif; }
+.acomp-root { font-family: var(--font-body); }
 
 .acomp-header {
     display: flex; align-items: center;
     justify-content: space-between; margin-bottom: 28px;
     flex-wrap: wrap; gap: 12px;
 }
-.acomp-header h2 { font-size: 24px; font-weight: 700; color: #1c2434; margin: 0; }
-.acomp-header p  { font-size: 13px; color: #9ca3af; margin: 4px 0 0; }
+.acomp-header h2 {
+    font-size: 22px; font-weight: 800; color: var(--deep); margin: 0;
+    font-family: var(--font-display); text-transform: uppercase;
+}
+.acomp-header p  { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
 
 .live-badge {
     display: flex; align-items: center; gap: 8px;
-    background: #f0fdf4; border: 1px solid #bbf7d0;
+    background: rgba(47,122,82,.08); border: 1px solid rgba(47,122,82,.3);
     border-radius: 20px; padding: 6px 14px;
-    font-size: 12px; font-weight: 700; color: #16a34a; letter-spacing: .5px;
+    font-size: 11px; font-weight: 700; color: var(--good); letter-spacing: .06em;
+    font-family: var(--font-mono); text-transform: uppercase;
 }
 .live-dot {
-    width: 8px; height: 8px; background: #16a34a;
-    border-radius: 50%; animation: pulsar 1.4s infinite;
+    width: 7px; height: 7px; background: var(--good);
+    border-radius: 50%; animation: pulsar 1.6s infinite;
 }
 @keyframes pulsar {
     0%,100%{ opacity:1; transform:scale(1); }
-    50%    { opacity:.4; transform:scale(1.3); }
+    50%    { opacity:.35; transform:scale(1.35); }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; }
 }
 
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 14px;
 }
 
 /* ── Card = <details> ── */
 .oc-card {
-    background: white; border-radius: 12px;
-    border: 2px solid #e9ecef; overflow: hidden;
+    background: var(--paper); border-radius: 4px;
+    border: 1px solid var(--border); overflow: hidden;
     transition: border-color .3s, box-shadow .3s;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
 }
-.oc-card.estado-ok      { border-color: #e9ecef; }
-.oc-card.estado-atencao { border-color: #fbbf24; box-shadow: 0 0 0 3px rgba(251,191,36,.15); }
-.oc-card.estado-critico { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15);
-    animation: piscar 2s infinite; }
+.oc-card.estado-ok      { border-color: var(--border); }
+.oc-card.estado-atencao { border-color: var(--warn); box-shadow: 0 0 0 3px rgba(180,118,42,.14); }
+.oc-card.estado-critico { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(162,59,51,.16);
+    animation: piscar 2.2s infinite; }
 @keyframes piscar {
-    0%,100%{ box-shadow:0 0 0 3px rgba(239,68,68,.15); }
-    50%    { box-shadow:0 0 0 6px rgba(239,68,68,.25); }
+    0%,100%{ box-shadow:0 0 0 3px rgba(162,59,51,.16); }
+    50%    { box-shadow:0 0 0 6px rgba(162,59,51,.26); }
 }
 
-/* ── <summary> = cabeçalho compacto ── */
+/* ── <summary> = cabeçalho, já com os dados principais visíveis ── */
 .oc-card > summary {
-    list-style: none; /* remove seta nativa */
-    padding: 13px 16px;
-    display: flex; align-items: center; gap: 10px;
+    list-style: none;
+    padding: 14px 18px;
     cursor: pointer; user-select: none;
     transition: background .15s;
 }
 .oc-card > summary::-webkit-details-marker { display: none; }
-.oc-card > summary:hover { background: #f8fafc; }
+.oc-card > summary:hover { background: var(--fog); }
 
-/* Cabeçalho aberto */
-.oc-card[open] > summary               { background: #1c2434; }
+.oc-card[open] > summary               { background: var(--deep); }
 .oc-card[open] > summary .card-oc-num  { color: white; }
 .oc-card[open] > summary .card-total-time { color: white; }
 .oc-card[open] > summary .card-chevron { color: rgba(255,255,255,.6); transform: rotate(180deg); }
+.oc-card[open] > summary .info-label   { color: rgba(255,255,255,.45); }
+.oc-card[open] > summary .info-valor   { color: rgba(255,255,255,.9); }
+
+.card-summary-top { display: flex; align-items: center; gap: 10px; }
+.card-summary-info {
+    display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 4px 14px; margin-top: 12px;
+}
 
 .card-oc-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 15px; font-weight: 700; color: #1c2434; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 14.5px; font-weight: 700; color: var(--ink); flex-shrink: 0;
 }
 .card-status-badge {
-    font-size: 10px; font-weight: 700;
-    padding: 2px 8px; border-radius: 20px; letter-spacing: .3px; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 700;
+    padding: 3px 10px 3px 8px; border-radius: 20px; letter-spacing: .02em; flex-shrink: 0;
 }
-.badge-ok      { background:#dcfce7; color:#16a34a; }
-.badge-atencao { background:#fef9c3; color:#ca8a04; }
-.badge-critico { background:#fee2e2; color:#dc2626; }
+.card-status-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.badge-ok      { background: rgba(47,122,82,.11);  color: var(--good); }
+.badge-ok::before      { background: var(--good); }
+.badge-atencao { background: rgba(180,118,42,.13); color: var(--warn); }
+.badge-atencao::before { background: var(--warn); }
+.badge-critico { background: rgba(162,59,51,.13);  color: var(--danger); }
+.badge-critico::before { background: var(--danger); }
+
 .card-total-time {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 20px; font-weight: 700; color: #1c2434;
-    margin-left: auto; letter-spacing: 1px;
+    font-family: var(--font-mono); font-size: 19px; font-weight: 700; color: var(--ink);
+    margin-left: auto; font-variant-numeric: tabular-nums;
 }
 .card-chevron {
-    font-size: 10px; color: #9ca3af;
+    font-size: 10px; color: var(--muted);
     transition: transform .2s, color .15s; flex-shrink: 0;
 }
 
 /* ── Corpo expansível ── */
-.card-details { border-top: 1px solid #f1f5f9; padding: 14px 16px; }
+.card-details { border-top: 1px solid var(--border); padding: 14px 16px; }
 
 /* ── Tempos de espera ── */
 .wait-section {
-    background: #f8fafc; border-radius: 10px;
+    background: var(--fog); border-radius: 4px;
     padding: 12px 14px; margin-bottom: 14px;
-    border: 1px solid #e9ecef;
+    border: 1px solid var(--border);
 }
 .wait-section-title {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .8px; color: #6b7280; margin-bottom: 8px;
+    font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); margin-bottom: 8px;
 }
 .wait-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
-    background: white; border: 1px solid #e9ecef;
+    padding: 8px 10px; border-radius: 3px; margin-bottom: 6px;
+    background: var(--paper); border: 1px solid var(--border);
     transition: background .4s, border-color .4s;
 }
 .wait-row:last-child { margin-bottom: 0; }
-.wait-row-label { font-size: 12px; font-weight: 600; color: #374151; }
-.wait-row-sub   { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+.wait-row-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+.wait-row-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
 .wait-row-time  {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 18px; font-weight: 700; color: #9ca3af;
-    flex-shrink: 0; margin-left: 8px;
+    font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: var(--muted);
+    flex-shrink: 0; margin-left: 8px; font-variant-numeric: tabular-nums;
 }
-.wait-row.ok      { border-color: #bbf7d0; background: #f0fdf4; }
-.wait-row.ok      .wait-row-time { color: #16a34a; }
-.wait-row.atencao { border-color: #fde68a; background: #fffbeb; }
-.wait-row.atencao .wait-row-time { color: #ca8a04; }
-.wait-row.critico { border-color: #fca5a5; background: #fef2f2; }
-.wait-row.critico .wait-row-time { color: #dc2626; }
+.wait-row.ok      { border-color: rgba(47,122,82,.3);  background: rgba(47,122,82,.05); }
+.wait-row.ok      .wait-row-time { color: var(--good); }
+.wait-row.atencao { border-color: rgba(180,118,42,.35); background: rgba(180,118,42,.06); }
+.wait-row.atencao .wait-row-time { color: var(--warn); }
+.wait-row.critico { border-color: rgba(162,59,51,.35);  background: rgba(162,59,51,.06); }
+.wait-row.critico .wait-row-time { color: var(--danger); }
 
 /* ── Info grid ── */
 .card-info-grid {
     display: grid; grid-template-columns: 1fr 1fr;
     gap: 10px 14px; margin-bottom: 14px;
 }
-.info-label { font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .8px; color: #9ca3af; margin-bottom: 2px; }
-.info-valor { font-size: 13px; font-weight: 600; color: #374151;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.info-label {
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); margin-bottom: 2px;
+}
+.info-valor {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ── Check-in ── */
+.checkin-box {
+    border-radius: 3px; padding: 7px 10px; margin-bottom: 10px;
+    font-size: 11px; font-weight: 600; border-left: 3px solid;
+}
+.checkin-pendente { background: rgba(180,118,42,.08); border-left-color: var(--warn); color: var(--warn); }
 
 /* ── Etapa box ── */
 .etapa-box {
-    background: #f8fafc; border-radius: 10px;
+    background: var(--fog); border-radius: 3px;
     padding: 10px 12px; margin-bottom: 12px;
-    border-left: 3px solid #1c2434;
+    border-left: 3px solid var(--deep);
 }
-.etapa-box.atencao { border-left-color: #fbbf24; background: #fffbeb; }
-.etapa-box.critico { border-left-color: #ef4444; background: #fef2f2; }
-.etapa-label { font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .8px; color: #9ca3af; margin-bottom: 3px; }
-.etapa-nome  { font-size: 13px; font-weight: 700; color: #1c2434; }
-.etapa-area  { font-size: 11px; color: #6b7280; margin-top: 2px; }
+.etapa-box.atencao { border-left-color: var(--warn); background: rgba(180,118,42,.06); }
+.etapa-box.critico  { border-left-color: var(--danger); background: rgba(162,59,51,.06); }
+.etapa-label {
+    font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--muted); margin-bottom: 3px;
+}
+.etapa-nome  { font-size: 13px; font-weight: 700; color: var(--ink); }
+.etapa-area  { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
 /* ── Cronos ── */
 .cronos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .crono-box {
-    background: #f8fafc; border-radius: 8px;
+    background: var(--fog); border-radius: 3px;
     padding: 8px 10px; text-align: center;
 }
-.crono-box.crono-etapa            { background: #1c2434; }
-.crono-box.crono-etapa.atencao    { background: #ca8a04; }
-.crono-box.crono-etapa.critico    { background: #dc2626; }
-.crono-label { font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .7px; color: #9ca3af; margin-bottom: 3px; }
-.crono-box.crono-etapa .crono-label { color: rgba(255,255,255,.5); }
-.crono-valor { font-family: 'IBM Plex Mono', monospace;
-    font-size: 18px; font-weight: 700; color: #1c2434; line-height: 1; }
+.crono-box.crono-etapa            { background: var(--deep); }
+.crono-box.crono-etapa.atencao    { background: var(--warn); }
+.crono-box.crono-etapa.critico    { background: var(--danger); }
+.crono-label {
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--muted); margin-bottom: 3px;
+}
+.crono-box.crono-etapa .crono-label { color: rgba(255,255,255,.55); }
+.crono-valor {
+    font-family: var(--font-mono); font-size: 17px; font-weight: 700; color: var(--ink);
+    line-height: 1; font-variant-numeric: tabular-nums;
+}
 .crono-box.crono-etapa .crono-valor { color: white; }
 
 .meta-barra-wrap { margin-top: 8px; }
-.meta-info { display: flex; justify-content: space-between;
-    font-size: 11px; color: #9ca3af; margin-bottom: 3px; }
-.meta-barra-bg { height: 4px; background: #f1f5f9; border-radius: 3px; overflow: hidden; }
+.meta-info {
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: var(--muted); margin-bottom: 3px;
+    font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .04em;
+}
+.meta-barra-bg { height: 4px; background: var(--fog); border-radius: 3px; overflow: hidden; }
 .meta-barra-fill { height: 100%; border-radius: 3px; transition: width .5s, background .5s; }
 
-.vazio { text-align: center; padding: 60px 20px;
-    color: #9ca3af; grid-column: 1 / -1; }
-.vazio-icon { font-size: 48px; margin-bottom: 12px; }
+.vazio { text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1 / -1; }
+.vazio-drop { width: 40px; height: 52px; margin: 0 auto 14px; opacity: .35; }
+
+/* ── Pátio agora: linha do tempo dos caminhões ── */
+.eyebrow-label {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted);
+}
+.tt-divider { margin: 40px 0 16px; padding-top: 26px; border-top: 1px solid var(--border); }
+
+.truck-timeline { background: var(--paper); border: 1px solid var(--border); border-radius: 4px; padding: 30px 34px 26px; }
+.tt-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 130px; flex-wrap: wrap; transition: margin-bottom .2s; }
+.tt-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.tt-sub { font-size: 12px; color: var(--muted); margin-top: 3px; max-width: 400px; }
+.tt-count { font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+.tt-track { position: relative; height: 20px; margin: 0 8px 54px; }
+.tt-line { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border); border-radius: 2px; }
+
+.tt-node { position: absolute; top: 0; transform: translateX(-50%); }
+.tt-node-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--paper); border: 2px solid var(--border); margin-top: -5px; }
+.tt-node-label { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); white-space: nowrap; text-align: center; }
+.tt-node-code { font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--muted); }
+.tt-node-name { font-size: 11px; font-weight: 600; color: var(--ink); margin-top: 1px; }
+
+.tt-truck { position: absolute; transform: translateX(-50%); transition: left 1s linear, top .3s; cursor: pointer; }
+.tt-truck svg { display: block; width: 46px; height: 23px; filter: drop-shadow(0 2px 3px rgba(19,43,78,.22)); transition: filter .15s; }
+.tt-truck:hover svg { filter: drop-shadow(0 3px 5px rgba(19,43,78,.35)); }
+.tt-truck.idle svg { animation: tt-idle 2.4s ease-in-out infinite; }
+.tt-truck.selected svg, .tt-truck:focus-visible svg { outline: 2px solid var(--sky); outline-offset: 2px; border-radius: 3px; }
+@keyframes tt-idle { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-2px); } }
+
+.tt-truck-tag {
+    display: none; position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%); margin-bottom: 8px;
+    background: var(--deep); color: #fff; border-radius: 3px; padding: 3px 8px;
+    font-size: 10px; white-space: nowrap; text-align: center; line-height: 1.4; pointer-events: none;
+}
+.tt-truck.selected { z-index: 2; }
+.tt-truck.selected .tt-truck-tag { display: block; }
+.tt-truck-tag b { font-family: var(--font-mono); display: block; font-size: 10.5px; }
+.tt-truck-tag span { font-family: var(--font-mono); opacity: .7; }
+
+.tt-detail { margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--border); display: flex; gap: 30px; flex-wrap: wrap; align-items: flex-start; }
+.tt-detail-head { min-width: 170px; flex-shrink: 0; }
+.tt-detail-oc { font-family: var(--font-mono); font-weight: 700; font-size: 16px; color: var(--ink); margin-top: 4px; }
+.tt-detail-stage { font-size: 12px; color: var(--chlorum); font-weight: 600; margin-top: 2px; }
+.tt-detail-grid { display: grid; grid-template-columns: repeat(4,minmax(120px,1fr)); gap: 14px 24px; flex: 1; }
+.tt-detail-hint { grid-column: 1/-1; font-size: 13px; color: var(--muted); font-style: italic; }
+@media (max-width: 720px) { .tt-detail-grid { grid-template-columns: repeat(2,1fr); } }
+
+.tt-help { font-size: 12px; color: var(--muted); margin: 20px 0 0; max-width: 640px; }
 </style>
 
 <div class="acomp-root">
     <div class="acomp-header">
         <div>
-            <h2>Painel de Ordens de Carregamento</h2>
+            <h2>Acompanhamento ao Vivo</h2>
             <p id="contagem_ocs">Carregando OCs em aberto...</p>
         </div>
         <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <div class="live-badge"><div class="live-dot"></div> AO VIVO</div>
+            <div class="live-badge"><div class="live-dot"></div> Ao vivo</div>
             <a href="/oc/nova" class="btn btn-primary btn-sm">+ Nova OC</a>
         </div>
     </div>
 
     <div class="cards-grid" id="cards_grid"></div>
+
+    <!-- ── Pátio agora: linha do tempo dos caminhões que já fizeram check-in ── -->
+    <div class="tt-divider"><span class="eyebrow-label">Pátio agora</span></div>
+
+    <div class="truck-timeline" id="truck-timeline">
+        <div class="tt-header">
+            <div>
+                <div class="tt-title">Caminhões no pátio</div>
+                <div class="tt-sub">Todo caminhão que já fez check-in aparece aqui, até o check-out.</div>
+            </div>
+            <div class="tt-count" id="tt-count">—</div>
+        </div>
+
+        <div class="tt-track" id="tt-track">
+            <div class="tt-line"></div>
+            <div class="tt-node" style="left:0%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">040</div><div class="tt-node-name">Check-in</div></div>
+            </div>
+            <div class="tt-node" style="left:20%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">060</div><div class="tt-node-name">Checklist de Entrada</div></div>
+            </div>
+            <div class="tt-node" style="left:40%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">070</div><div class="tt-node-name">Balança Inicial</div></div>
+            </div>
+            <div class="tt-node" style="left:60%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">080</div><div class="tt-node-name">Checklist de Carregamento</div></div>
+            </div>
+            <div class="tt-node" style="left:80%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">090</div><div class="tt-node-name">Balança Final</div></div>
+            </div>
+            <div class="tt-node" style="left:100%">
+                <div class="tt-node-dot"></div>
+                <div class="tt-node-label"><div class="tt-node-code">100</div><div class="tt-node-name">Check-out</div></div>
+            </div>
+        </div>
+
+        <div class="tt-detail" id="tt-detail">
+            <div class="tt-detail-head">
+                <div class="eyebrow-label" id="tt-detail-eyebrow">Nada selecionado</div>
+                <div class="tt-detail-oc" id="tt-detail-oc">—</div>
+                <div class="tt-detail-stage" id="tt-detail-stage"></div>
+            </div>
+            <div class="tt-detail-grid" id="tt-detail-grid">
+                <div class="tt-detail-hint">Clique em um caminhão na régua acima para ver placa, produto, lote e transportadora.</div>
+            </div>
+        </div>
+
+        <p class="tt-help">O mesmo contexto que já aparece no topo de cada etapa — placa, produto, lote e transportadora.</p>
+    </div>
+
+    <div class="vazio" id="tt_vazio" style="display:none;">Nenhum caminhão no pátio agora.</div>
 </div>
 
 <script>
@@ -217,7 +357,7 @@ function estadoEspera(mins) {
 function waitRow(rowId, label, sub, fromTs) {
     if (fromTs === null) {
         return `<div class="wait-row">
-            <div><div class="wait-row-label" style="color:#9ca3af;">${label}</div></div>
+            <div><div class="wait-row-label" style="color:var(--muted);">${label}</div></div>
             <div class="wait-row-time">—</div></div>`;
     }
     return `<div class="wait-row" id="${rowId}">
@@ -236,8 +376,8 @@ function construirCards() {
     if (!OCS_DATA.length) {
         contagem.textContent = 'Nenhuma OC em aberto no momento.';
         grid.innerHTML = `<div class="vazio">
-            <div class="vazio-icon">✅</div>
-            <p>Todas as OCs foram concluídas!</p></div>`;
+            <svg class="vazio-drop" viewBox="0 0 100 130"><path d="M50,3 C74,34 96,61 96,84 A46,46 0 1 1 4,84 C4,61 26,34 50,3 Z" fill="currentColor"/></svg>
+            <p>Todas as OCs foram concluídas.</p></div>`;
         return;
     }
 
@@ -246,53 +386,47 @@ function construirCards() {
     OCS_DATA.forEach(oc => {
         const metaMin = TEMPO_META[oc.etapa_codigo] || null;
 
-        /* Linha de check-in */
+        /* Linha de check-in — só o aviso de pendência; "check-in OK" já vira caminhão no pátio agora */
         let checkinHtml = '';
         if (oc.checkin_ts === null) {
-            checkinHtml = `<div style="background:#fef3c7;border-left:3px solid #f59e0b;
-                border-radius:8px;padding:7px 10px;margin-bottom:10px;
-                font-size:11px;color:#92400e;font-weight:600;">
-                ⏳ Check-in não realizado</div>`;
-        } else if (oc.checkin_espera_fixa === null) {
-            checkinHtml = `<div id="checkin_box_${oc.id}" style="background:#eff6ff;
-                border-left:3px solid #3b82f6;border-radius:8px;padding:7px 10px;
-                margin-bottom:10px;font-size:11px;">
-                <span style="color:#1d4ed8;font-weight:700;">✔ Check-in OK</span>
-                <span style="color:#6b7280;"> — Aguardando entrada: </span>
-                <span id="checkin_timer_${oc.id}" style="font-family:'IBM Plex Mono',monospace;
-                    font-weight:700;color:#1d4ed8;">00:00</span></div>`;
+            checkinHtml = `<div class="checkin-box checkin-pendente">
+                Check-in não realizado</div>`;
         }
 
-        const w1Sub = oc.w1_to_ts !== null ? '✔ Concluído' : '● Ao vivo';
-        const w2Sub = oc.w2_to_ts !== null ? '✔ Concluído' : '● Ao vivo';
+        const w1Sub = oc.w1_to_ts !== null ? 'Concluído' : 'Ao vivo';
+        const w2Sub = oc.w2_to_ts !== null ? 'Concluído' : 'Ao vivo';
 
-        /* <details> = card. <summary> = cabeçalho compacto. Resto = corpo. */
+        /* <details> = card. <summary> = cabeçalho maior, já com os dados principais. Resto = corpo. */
         const card = document.createElement('details');
         card.className = 'oc-card estado-ok';
         card.id = `card_${oc.id}`;
 
         card.innerHTML = `
         <summary>
-            <span class="card-oc-num">${oc.numero_oc}</span>
-            <span class="card-status-badge badge-ok" id="badge_${oc.id}">No prazo</span>
-            <span class="card-total-time" id="crono_total_${oc.id}">00:00</span>
-            <span class="card-chevron">▼</span>
-        </summary>
-
-        <div class="card-details">
-            <div class="wait-section">
-                <div class="wait-section-title">⏱ Tempos de Espera</div>
-                ${waitRow(`w1_${oc.id}`, '🚛 Check-in → Checklist de Entrada', w1Sub, oc.w1_from_ts)}
-                ${waitRow(`w2_${oc.id}`, '📦 Checklist Entrada → Carregamento', w2Sub, oc.w2_from_ts)}
+            <div class="card-summary-top">
+                <span class="card-oc-num">${oc.numero_oc}</span>
+                <span class="card-status-badge badge-ok" id="badge_${oc.id}">No prazo</span>
+                <span class="card-total-time" id="crono_total_${oc.id}">00:00</span>
+                <span class="card-chevron">▼</span>
             </div>
-
-            <div class="card-info-grid">
+            <div class="card-summary-info">
                 <div><div class="info-label">Cliente</div>
                      <div class="info-valor" title="${oc.cliente}">${oc.cliente}</div></div>
                 <div><div class="info-label">Produto</div>
                      <div class="info-valor">${oc.produto}</div></div>
                 <div><div class="info-label">Transportadora</div>
                      <div class="info-valor" title="${oc.transportadora}">${oc.transportadora}</div></div>
+            </div>
+        </summary>
+
+        <div class="card-details">
+            <div class="wait-section">
+                <div class="wait-section-title">Tempos de Espera</div>
+                ${waitRow(`w1_${oc.id}`, 'Check-in → Checklist de Entrada', w1Sub, oc.w1_from_ts)}
+                ${waitRow(`w2_${oc.id}`, 'Checklist de Entrada → Carregamento', w2Sub, oc.w2_from_ts)}
+            </div>
+
+            <div class="card-info-grid">
                 <div><div class="info-label">Placa Carreta</div>
                      <div class="info-valor">${oc.placa_carreta}</div></div>
             </div>
@@ -307,11 +441,11 @@ function construirCards() {
 
             <div class="cronos-grid">
                 <div class="crono-box">
-                    <div class="crono-label">⏱ Total OC</div>
+                    <div class="crono-label">Total OC</div>
                     <div class="crono-valor" id="crono_total_det_${oc.id}">00:00</div>
                 </div>
                 <div class="crono-box crono-etapa" id="crono_etapa_box_${oc.id}">
-                    <div class="crono-label">⚡ Etapa</div>
+                    <div class="crono-label">Etapa</div>
                     <div class="crono-valor" id="crono_etapa_${oc.id}">00:00</div>
                 </div>
             </div>
@@ -319,17 +453,17 @@ function construirCards() {
             ${metaMin ? `
             <div class="meta-barra-wrap">
                 <div class="meta-info">
-                    <span>Meta etapa (${metaMin} min)</span>
+                    <span>Meta da etapa (${metaMin} min)</span>
                     <span id="meta_pct_${oc.id}">0%</span>
                 </div>
                 <div class="meta-barra-bg">
                     <div class="meta-barra-fill" id="meta_barra_${oc.id}"
-                         style="width:0%;background:#16a34a;"></div>
+                         style="width:0%;background:var(--good);"></div>
                 </div>
             </div>` : ''}
 
             <div style="margin-top:10px;text-align:right;">
-                <a href="/oc/${oc.id}" style="font-size:12px;color:#1c2434;font-weight:600;">
+                <a href="/oc/${oc.id}" style="font-size:12px;color:var(--chlorum);font-weight:600;">
                     Abrir OC →</a>
             </div>
         </div>`;
@@ -366,8 +500,8 @@ function atualizarCronos() {
         const badge = el(`badge_${oc.id}`);
         if (badge) {
             badge.className   = `card-status-badge badge-${estado}`;
-            badge.textContent = estado==='critico' ? '⚠ Atrasado'
-                              : estado==='atencao' ? '⚡ Atenção' : 'No prazo';
+            badge.textContent = estado==='critico' ? 'Atrasada'
+                              : estado==='atencao' ? 'Atenção' : 'No prazo';
         }
 
         const etapaBox = el(`etapa_box_${oc.id}`);
@@ -380,22 +514,9 @@ function atualizarCronos() {
         const pctEl = el(`meta_pct_${oc.id}`);
         if (barra) {
             barra.style.width      = pct + '%';
-            barra.style.background = estado==='critico'?'#ef4444':estado==='atencao'?'#f59e0b':'#16a34a';
+            barra.style.background = estado==='critico' ? 'var(--danger)' : estado==='atencao' ? 'var(--warn)' : 'var(--good)';
         }
         if (pctEl) pctEl.textContent = pct + '%';
-
-        /* Timer de espera pós check-in (até 050 iniciar) */
-        if (oc.checkin_ts !== null && oc.checkin_espera_fixa === null) {
-            const secs = ts - oc.checkin_ts;
-            const ct = el(`checkin_timer_${oc.id}`);
-            if (ct) ct.textContent = formatarTempo(secs);
-            const cb = el(`checkin_box_${oc.id}`);
-            if (cb) {
-                const p = secs / (15*60);
-                cb.style.background      = p>=1?'#fee2e2':p>=.75?'#fef9c3':'#eff6ff';
-                cb.style.borderLeftColor = p>=1?'#ef4444':p>=.75?'#f59e0b':'#3b82f6';
-            }
-        }
 
         /* Timer 1: Check-in → Checklist de Entrada */
         const w1r = el(`w1_${oc.id}`);
@@ -421,6 +542,134 @@ construirCards();
 atualizarCronos();
 setInterval(atualizarCronos, 1000);
 setInterval(() => location.reload(), 60000);
+</script>
+
+<script>
+/* ── Pátio agora: linha do tempo dos caminhões (calculada 100% a partir de OCS_DATA) ── */
+(function () {
+    const NODE_PCT = { '040':0, '060':20, '070':40, '080':60, '090':80, '100':100 };
+    const track   = document.getElementById('tt-track');
+    const wrap    = document.getElementById('truck-timeline');
+    const vazio   = document.getElementById('tt_vazio');
+    const countEl = document.getElementById('tt-count');
+    if (!track) return;
+
+    let selected    = null;
+    let trucksCache = [];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    function fmt(sec) {
+        sec = Math.max(0, Math.floor(sec));
+        const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+        return (h > 0 ? pad(h) + ':' : '') + pad(m) + ':' + pad(s);
+    }
+
+    /* Um caminhão só aparece depois do check-in (040) e some depois do check-out (100) */
+    function computeTrucks() {
+        const ts = Math.floor(Date.now()/1000);
+        const list = [];
+        OCS_DATA.forEach(oc => {
+            if (oc.checkin_ts === null) return;
+            if (oc.etapa_codigo === '110' || oc.etapa_codigo === '120') return;
+
+            let pct, elapsed, metaSec;
+            if (NODE_PCT.hasOwnProperty(oc.etapa_codigo)) {
+                pct     = NODE_PCT[oc.etapa_codigo];
+                elapsed = ts - oc.etapa_inicio_ts;
+                metaSec = (TEMPO_META[oc.etapa_codigo] || 0) * 60;
+            } else {
+                /* ainda em 010/020/030 (paralelo) — caminhão esperando entre check-in e checklist de entrada */
+                elapsed = ts - oc.checkin_ts;
+                metaSec = (TEMPO_META['040'] || 15) * 60;
+                pct     = Math.min(elapsed / metaSec, 1) * 20;
+            }
+            list.push({ oc, pct, elapsed, metaSec });
+        });
+        return list;
+    }
+
+    function renderDetail(i) {
+        const eyebrow = document.getElementById('tt-detail-eyebrow');
+        const grid    = document.getElementById('tt-detail-grid');
+
+        if (i == null || !trucksCache[i]) {
+            eyebrow.textContent = 'Nada selecionado';
+            document.getElementById('tt-detail-oc').textContent = '—';
+            document.getElementById('tt-detail-stage').textContent = '';
+            grid.innerHTML = '<div class="tt-detail-hint">Clique em um caminhão na régua acima para ver placa, produto, lote e transportadora.</div>';
+            return;
+        }
+
+        const oc = trucksCache[i].oc;
+        eyebrow.textContent = 'Selecionado';
+        document.getElementById('tt-detail-oc').textContent = oc.numero_oc;
+        document.getElementById('tt-detail-stage').textContent = oc.etapa_codigo + ' — ' + oc.etapa_nome;
+        const campos = [
+            ['Cliente', oc.cliente], ['Produto', oc.produto], ['Nº Lote', oc.lote],
+            ['Transportadora', oc.transportadora], ['Placa Carreta', oc.placa_carreta],
+            ['Placa Cavalo', oc.placa_cavalo], ['Motorista', oc.motorista]
+        ];
+        grid.innerHTML = campos.map(c =>
+            '<div><div class="info-label">' + c[0] + '</div><div class="info-valor">' + c[1] + '</div></div>'
+        ).join('');
+    }
+
+    function select(i) {
+        selected = (selected === i) ? null : i;
+        render();
+    }
+
+    function render() {
+        const trucks = computeTrucks();
+        trucksCache  = trucks;
+
+        countEl.textContent = trucks.length + (trucks.length === 1 ? ' caminhão no pátio' : ' caminhões no pátio');
+        wrap.style.display  = trucks.length ? '' : 'none';
+        vazio.style.display = trucks.length ? 'none' : '';
+
+        track.querySelectorAll('.tt-truck').forEach(el => el.remove());
+
+        const lanes = {};
+        trucks.forEach((t, i) => {
+            const key  = Math.round(t.pct);
+            const lane = lanes[key] = (lanes[key] || 0);
+            lanes[key]++;
+
+            const pctMeta = t.metaSec ? t.elapsed / t.metaSec : 0;
+            const accent  = pctMeta >= 1 ? 'var(--danger)' : 'var(--chlorum)';
+
+            const el = document.createElement('div');
+            el.className = 'tt-truck' + (lane === 0 && t.pct < 20 && t.pct > 0 ? ' idle' : '') + (selected === i ? ' selected' : '');
+            el.style.left = t.pct + '%';
+            el.style.top  = (-27 - lane * 68) + 'px';
+            el.setAttribute('role', 'button');
+            el.setAttribute('tabindex', '0');
+            el.setAttribute('aria-label', t.oc.numero_oc);
+            el.innerHTML =
+                '<div class="tt-truck-tag"><b>' + t.oc.numero_oc + '</b><span>' + fmt(t.elapsed) + '</span></div>' +
+                '<svg viewBox="0 0 64 32" aria-hidden="true" style="--truck-accent:' + accent + ';">' +
+                '<rect x="2" y="6" width="34" height="16" rx="2" fill="var(--deep)"/>' +
+                '<rect x="36" y="11" width="17" height="11" rx="2" fill="var(--truck-accent)"/>' +
+                '<rect x="40" y="13" width="8" height="5" rx="1" fill="var(--sky)"/>' +
+                '<circle cx="13" cy="24" r="5" fill="var(--ink)"/><circle cx="13" cy="24" r="1.8" fill="var(--fog)"/>' +
+                '<circle cx="45" cy="24" r="5" fill="var(--ink)"/><circle cx="45" cy="24" r="1.8" fill="var(--fog)"/>' +
+                '</svg>';
+            el.addEventListener('click', function () { select(i); });
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); }
+            });
+            track.appendChild(el);
+        });
+
+        const maxLane = Object.values(lanes).reduce((max, n) => Math.max(max, n - 1), 0);
+        document.querySelector('#truck-timeline .tt-header').style.marginBottom = (130 + maxLane * 68) + 'px';
+
+        renderDetail(selected);
+    }
+
+    render();
+    setInterval(render, 1000);
+})();
 </script>
 
 {% endblock %}
