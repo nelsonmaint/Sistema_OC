@@ -1,8 +1,8 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for
 from flask_login import LoginManager
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 
 from config import Config
 from models import db, User
@@ -47,6 +47,30 @@ init_db(app)
 @app.errorhandler(403)
 def acesso_negado(e):
     return render_template('403.html'), 403
+
+
+@app.errorhandler(CSRFError)
+def csrf_expirado(e):
+    """Sessão perdida/expirada no meio de um POST.
+
+    Sem isto o usuário leva um "Bad Request — The CSRF session token is
+    missing" cru e fica preso, porque a página no cache dele continua com o
+    token velho. Devolvendo o login, um cookie de sessão novo é emitido e a
+    próxima tentativa funciona.
+    """
+    return render_template(
+        'login.html',
+        erro='Sua sessão expirou. Faça login novamente.'), 400
+
+
+@app.after_request
+def nao_cachear_login(resp):
+    """A página de login carrega um token atrelado à sessão — servi-la do
+    cache do navegador reintroduz o erro de CSRF."""
+    if request.path == url_for('auth.login'):
+        resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'
+        resp.headers['Pragma'] = 'no-cache'
+    return resp
 
 
 if __name__ == '__main__':

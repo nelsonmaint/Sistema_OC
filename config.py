@@ -56,3 +56,15 @@ class Config:
         }
 
     MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB por requisição (uploads de fotos)
+
+    # Cookie de sessão
+    # O nome padrão do Flask é "session", genérico demais: cookies são
+    # compartilhados entre portas do mesmo host, então outra aplicação no
+    # mesmo servidor (Grafana, Node-RED...) pode sobrescrever o nosso e
+    # derrubar a sessão — o sintoma é justamente "CSRF session token is
+    # missing" no POST do login.
+    SESSION_COOKIE_NAME = 'sistema_oc_session'
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    # A rede local é HTTP puro; marcar Secure aqui impediria o envio do cookie.
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', '0') == '1'
