@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
+from sqlalchemy.exc import IntegrityError
 
 from models import db, User
 from constants import AREAS_CADASTRO
@@ -14,7 +15,11 @@ bp = Blueprint('usuarios', __name__)
 @admin_required
 def listar_usuarios():
     usuarios = User.query.order_by(User.nome).all()
-    return render_template('admin_usuarios.html', usuarios=usuarios)
+    erro = None
+    if request.args.get('erro') == 'vinculos':
+        erro = ('Usuário possui registros vinculados (etapas ou OCs) e não pode '
+                'ser excluído.')
+    return render_template('admin_usuarios.html', usuarios=usuarios, erro=erro)
 
 
 @bp.route('/admin/usuarios/novo', methods=['GET','POST'])
@@ -48,6 +53,12 @@ def cadastrar_usuario():
 def excluir_usuario(id):
     u = User.query.get_or_404(id)
     if u.id != current_user.id:
-        db.session.delete(u)
-        db.session.commit()
+        # O Postgres aplica as FKs (o SQLite não aplicava): se o usuário já
+        # registrou etapas ou excluiu OCs, o delete estoura IntegrityError.
+        try:
+            db.session.delete(u)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return redirect(url_for('usuarios.listar_usuarios', erro='vinculos'))
     return redirect(url_for('usuarios.listar_usuarios'))

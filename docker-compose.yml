@@ -1,0 +1,22 @@
+services:
+  app:
+    build: .
+    container_name: sistema_oc
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "5000:5000"
+    volumes:
+      # Fotos e assinaturas são gravadas em disco (helpers.py) e só o caminho
+      # vai para o banco — sem este volume, os anexos somem a cada recriação.
+      - uploads:/app/static/uploads
+    networks:
+      - pda_network
+
+volumes:
+  uploads:
+
+networks:
+  # Rede já existente (onde roda o container timescaledb-pg18).
+  pda_network:
+    external: true

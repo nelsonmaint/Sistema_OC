@@ -13,6 +13,13 @@ _tmp_fd, _tmp_db_path = tempfile.mkstemp(suffix='.db', prefix='sistema_oc_test_'
 os.close(_tmp_fd)
 os.environ['DATABASE_URL'] = 'sqlite:///' + _tmp_db_path.replace('\\', '/')
 
+# O app agora exige SECRET_KEY fora do modo debug e cria schema/tabelas/admin
+# no import (db_init.init_db). Nos testes o banco é montado abaixo, com os
+# usuários fixos que os casos esperam — então a inicialização automática fica
+# desligada para não injetar um admin extra vindo do .env.
+os.environ.setdefault('SECRET_KEY', 'chave-de-teste')
+os.environ['DB_AUTO_INIT'] = '0'
+
 import pytest
 from werkzeug.security import generate_password_hash
 

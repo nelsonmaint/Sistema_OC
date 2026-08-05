@@ -38,6 +38,10 @@ app.register_blueprint(ocs_bp)
 app.register_blueprint(etapas_bp)
 app.register_blueprint(dashboard_bp)
 
+# Cria schema, tabelas e o admin inicial se ainda não existirem. Vale para
+# `python app.py`, `run_prod.py` e o container, sem duplicar código.
+from db_init import init_db
+init_db(app)
 
 
 @app.errorhandler(403)

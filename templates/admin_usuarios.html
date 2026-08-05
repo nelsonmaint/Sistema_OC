@@ -2,6 +2,10 @@
 
 {% block content %}
 
+{% if erro %}
+<div class="alert alert-danger">{{ erro }}</div>
+{% endif %}
+
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
         <h2 class="mb-0">Usuários Cadastrados</h2>

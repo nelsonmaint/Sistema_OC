@@ -1,0 +1,15 @@
+.git/
+.gitignore
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+instance/
+*.db
+backups/
+tests/
+pytest.ini
+requirements-dev.txt
+iniciar_producao.bat
+scripts/
