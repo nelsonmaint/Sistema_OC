@@ -47,19 +47,25 @@
                 {% endif %}
             </td>
             <td>
-                {% if u.id != current_user.id %}
-                <form method="POST"
-                      action="/admin/usuarios/{{ u.id }}/excluir"
-                      onsubmit="return confirm('Excluir {{ u.nome }}?')">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit"
-                            class="btn btn-sm btn-outline-danger">
-                        Excluir
-                    </button>
-                </form>
-                {% else %}
-                    <span class="text-muted" style="font-size:12px;">você</span>
-                {% endif %}
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/admin/usuarios/{{ u.id }}/editar"
+                       class="btn btn-sm btn-outline-secondary">
+                        Editar
+                    </a>
+                    {% if u.id != current_user.id %}
+                    <form method="POST"
+                          action="/admin/usuarios/{{ u.id }}/excluir"
+                          onsubmit="return confirm('Excluir {{ u.nome }}?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger">
+                            Excluir
+                        </button>
+                    </form>
+                    {% else %}
+                        <span class="text-muted" style="font-size:12px;">você</span>
+                    {% endif %}
+                </div>
             </td>
         </tr>
         {% else %}

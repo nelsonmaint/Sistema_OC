@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/admin/usuarios" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    <h2 class="mb-0">Editar Usuário</h2>
+</div>
+
+{% if sucesso %}
+<div class="alert alert-success">{{ sucesso }}</div>
+{% endif %}
+
+{% if erro %}
+<div class="alert alert-danger">{{ erro }}</div>
+{% endif %}
+
+<form method="POST" style="max-width: 500px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Nome completo</label>
+        <input type="text" name="nome" class="form-control"
+               value="{{ usuario.nome }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">E-mail</label>
+        <input type="email" class="form-control" value="{{ usuario.email }}"
+               readonly disabled>
+        <small class="text-muted">
+            O e-mail é a credencial de login e não pode ser alterado.
+        </small>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Área</label>
+        <select name="area" class="form-control" required>
+            <option value="">Selecione a área</option>
+            {% for area in areas %}
+            <option value="{{ area }}" {% if area == usuario.area %}selected{% endif %}>
+                {{ area }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-4 form-check">
+        <input type="checkbox" name="is_admin" id="is_admin"
+               class="form-check-input"
+               {% if usuario.is_admin %}checked{% endif %}>
+        <label class="form-check-label" for="is_admin">
+            Administrador <span class="text-muted">(acesso total ao sistema)</span>
+        </label>
+    </div>
+
+    <hr class="my-4">
+
+    <p class="fw-bold mb-1">Redefinir senha</p>
+    <p class="text-muted" style="font-size: 13px;">
+        Deixe os dois campos em branco para manter a senha atual.
+    </p>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Nova senha</label>
+        <input type="password" name="senha" class="form-control"
+               placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">Confirmar nova senha</label>
+        <input type="password" name="senha2" class="form-control"
+               autocomplete="new-password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Salvar Alterações
+    </button>
+
+</form>
+
+{% endblock %}

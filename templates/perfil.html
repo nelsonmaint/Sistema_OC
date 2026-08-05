@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="/dashboard" class="btn btn-outline-secondary btn-sm">← Voltar</a>
+    <h2 class="mb-0">Meu Perfil</h2>
+</div>
+
+{% if sucesso %}
+<div class="alert alert-success">{{ sucesso }}</div>
+{% endif %}
+
+{% if erro %}
+<div class="alert alert-danger">{{ erro }}</div>
+{% endif %}
+
+<form method="POST" style="max-width: 500px;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Nome completo</label>
+        <input type="text" name="nome" class="form-control"
+               value="{{ current_user.nome }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">E-mail</label>
+        <input type="email" class="form-control"
+               value="{{ current_user.email }}" readonly disabled>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Área</label>
+        <input type="text" class="form-control"
+               value="{{ current_user.area }}" readonly disabled>
+        <small class="text-muted">
+            Área e perfil só podem ser alterados por um administrador.
+        </small>
+    </div>
+
+    <hr class="my-4">
+
+    <p class="fw-bold mb-1">Alterar senha</p>
+    <p class="text-muted" style="font-size: 13px;">
+        Deixe em branco para manter a senha atual.
+    </p>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Senha atual</label>
+        <input type="password" name="senha_atual" class="form-control"
+               autocomplete="current-password">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-bold">Nova senha</label>
+        <input type="password" name="senha" class="form-control"
+               placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+    </div>
+
+    <div class="mb-4">
+        <label class="form-label fw-bold">Confirmar nova senha</label>
+        <input type="password" name="senha2" class="form-control"
+               autocomplete="new-password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Salvar
+    </button>
+
+</form>
+
+{% endblock %}
