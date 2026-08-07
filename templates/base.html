@@ -379,6 +379,48 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+/*
+  Adiciona um botão "Tirar foto" ao lado de todo input de imagem (accept="image/*").
+  O input original continua servindo para escolher arquivo da galeria/disco;
+  o botão abre a câmera diretamente (capture="environment") em celulares.
+  Os arquivos tirados na câmera são transferidos para o input original antes do
+  envio do formulário, então o backend não precisa saber que essa opção existe.
+*/
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('input[type="file"][accept*="image"]').forEach(function (input) {
+        if (input.dataset.cameraEnhanced) return;
+        input.dataset.cameraEnhanced = '1';
+
+        const camInput = document.createElement('input');
+        camInput.type = 'file';
+        camInput.accept = input.accept;
+        camInput.capture = 'environment';
+        camInput.style.display = 'none';
+        if (input.multiple) camInput.multiple = true;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn btn-outline-secondary btn-sm mt-2';
+        btn.textContent = '📷 Tirar foto';
+        btn.addEventListener('click', function () { camInput.click(); });
+
+        camInput.addEventListener('change', function () {
+            if (!camInput.files || !camInput.files.length) return;
+            const dt = new DataTransfer();
+            if (input.multiple) {
+                Array.from(input.files || []).forEach(f => dt.items.add(f));
+            }
+            Array.from(camInput.files).forEach(f => dt.items.add(f));
+            input.files = dt.files;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            camInput.value = '';
+        });
+
+        input.insertAdjacentElement('afterend', camInput);
+        input.insertAdjacentElement('afterend', btn);
+    });
+});
+
 /* ── Sidebar ── */
 function abrirMenu() {
     document.getElementById('sidebar').classList.add('aberta');
