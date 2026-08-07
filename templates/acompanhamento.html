@@ -578,10 +578,12 @@ setInterval(() => location.reload(), 60000);
                 elapsed = ts - oc.etapa_inicio_ts;
                 metaSec = (TEMPO_META[oc.etapa_codigo] || 0) * 60;
             } else {
-                /* ainda em 010/020/030 (paralelo) — caminhão esperando entre check-in e checklist de entrada */
+                /* OC ainda não chegou na etapa 060 de verdade (está em 010/020/030/050) —
+                   caminhão fica preso entre os nós 040 e 060, sem nunca tocar o nó 060,
+                   pra não parecer que já chegou lá só porque fez o check-in. */
                 elapsed = ts - oc.checkin_ts;
                 metaSec = (TEMPO_META['040'] || 15) * 60;
-                pct     = Math.min(elapsed / metaSec, 1) * 20;
+                pct     = Math.min(elapsed / metaSec, 1) * (NODE_PCT['060'] - 2);
             }
             list.push({ oc, pct, elapsed, metaSec });
         });

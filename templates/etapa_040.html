@@ -8,8 +8,8 @@
     <a href="/oc/{{ oc.id }}" class="btn btn-outline-secondary btn-sm">← Voltar</a>
 </div>
 <h2 class="mb-1">ETAPA 040 - CHECK-IN PORTARIA</h2>
-<p><strong>OC:</strong> {{ oc.numero_oc }}</p>
 <hr>
+{% include '_contexto.html' %}
 
 <form method="POST" id="form040">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -220,7 +220,7 @@ Próximo
 <div class="mb-3">
 <label>Assinatura do Motorista</label><br>
 <canvas id="canvas1" width="450" height="160"
-style="border:1px solid #000;"></canvas>
+style="border:1px solid #000; touch-action:none;"></canvas>
 
 <input type="hidden" name="assinatura_motorista" id="assinatura_motorista">
 
@@ -236,7 +236,7 @@ Limpar
 <div class="mb-3">
 <label>Assinatura do Faturamento</label><br>
 <canvas id="canvas2" width="450" height="160"
-style="border:1px solid #000;"></canvas>
+style="border:1px solid #000; touch-action:none;"></canvas>
 
 <input type="hidden" name="assinatura_faturamento" id="assinatura_faturamento">
 
@@ -270,26 +270,57 @@ function prepararCanvas(id){
     let ctx = canvas.getContext('2d');
     let desenhando = false;
 
-    canvas.onmousedown = function(e){
+    function posicao(clientX, clientY){
+        let r = canvas.getBoundingClientRect();
+        return {
+            x: (clientX - r.left) * (canvas.width / r.width),
+            y: (clientY - r.top) * (canvas.height / r.height)
+        };
+    }
+
+    canvas.addEventListener('mousedown', function(e){
+        desenhando = true;
+        let p = posicao(e.clientX, e.clientY);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+    });
+
+    canvas.addEventListener('mousemove', function(e){
+        if(!desenhando) return;
+        let p = posicao(e.clientX, e.clientY);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+    });
+
+    canvas.addEventListener('mouseup', function(){
+        desenhando = false;
+    });
+
+    canvas.addEventListener('mouseleave', function(){
+        desenhando = false;
+    });
+
+    canvas.addEventListener('touchstart', function(e){
+        e.preventDefault();
+        let t = e.touches[0];
+        let p = posicao(t.clientX, t.clientY);
         desenhando = true;
         ctx.beginPath();
-        ctx.moveTo(e.offsetX, e.offsetY);
-    };
+        ctx.moveTo(p.x, p.y);
+    }, { passive: false });
 
-    canvas.onmousemove = function(e){
-        if(desenhando){
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
-        }
-    };
+    canvas.addEventListener('touchmove', function(e){
+        e.preventDefault();
+        if(!desenhando) return;
+        let t = e.touches[0];
+        let p = posicao(t.clientX, t.clientY);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+    }, { passive: false });
 
-    canvas.onmouseup = function(){
+    canvas.addEventListener('touchend', function(){
         desenhando = false;
-    };
-
-    canvas.onmouseleave = function(){
-        desenhando = false;
-    };
+    });
 }
 
 function limparCanvas(id){

@@ -18,10 +18,10 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="mb-4">
-            <label class="form-label fw-bold">Pesagem (kg)</label>
+            <label class="form-label fw-bold">Pesagem (t)</label>
             <input type="number" name="pesagem" class="form-control"
-                   step="0.01" min="0" placeholder="Ex: 12500.00" required>
-            <small class="text-muted">Informe o peso bruto do veículo vazio.</small>
+                   step="0.001" min="0" placeholder="Ex: 12.500" required>
+            <small class="text-muted">Informe o peso bruto do veículo vazio, em toneladas.</small>
         </div>
 
         <button type="submit" class="btn btn-success">

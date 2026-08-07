@@ -65,7 +65,7 @@
                  style="background: var(--fog); border-radius:4px;">
                 <label class="form-label fw-bold">ASSINATURA DO SUPERVISOR</label><br>
                 <canvas id="canvas_sup_antes" width="450" height="150"
-                        style="border:1px solid #000; border-radius:4px; cursor:crosshair;"></canvas>
+                        style="border:1px solid #000; border-radius:4px; cursor:crosshair; touch-action:none;"></canvas>
                 <input type="hidden" name="assinatura_supervisor_antes" id="assinatura_supervisor_antes">
                 <br>
                 <button type="button" class="btn btn-warning btn-sm mt-2"
@@ -161,7 +161,7 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">ASSINATURA DO OPERADOR</label><br>
                 <canvas id="canvas_operador" width="450" height="150"
-                        style="border:1px solid #000; border-radius:4px; cursor:crosshair;"></canvas>
+                        style="border:1px solid #000; border-radius:4px; cursor:crosshair; touch-action:none;"></canvas>
                 <input type="hidden" name="assinatura_operador" id="assinatura_operador">
                 <br>
                 <button type="button" class="btn btn-warning btn-sm mt-2"
@@ -184,7 +184,7 @@
                  style="background: var(--fog); border-radius:4px;">
                 <label class="form-label fw-bold">ASSINATURA DO SUPERVISOR</label><br>
                 <canvas id="canvas_sup_depois" width="450" height="150"
-                        style="border:1px solid #000; border-radius:4px; cursor:crosshair;"></canvas>
+                        style="border:1px solid #000; border-radius:4px; cursor:crosshair; touch-action:none;"></canvas>
                 <input type="hidden" name="assinatura_supervisor_depois" id="assinatura_supervisor_depois">
                 <br>
                 <button type="button" class="btn btn-warning btn-sm mt-2"
@@ -213,19 +213,36 @@ function prepararCanvas(id) {
     ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
     let desenhando = false;
 
-    canvas.addEventListener('mousedown', e => { desenhando = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-    canvas.addEventListener('mousemove', e => { if (!desenhando) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+    function posicao(clientX, clientY) {
+        const r = canvas.getBoundingClientRect();
+        return {
+            x: (clientX - r.left) * (canvas.width / r.width),
+            y: (clientY - r.top) * (canvas.height / r.height)
+        };
+    }
+
+    canvas.addEventListener('mousedown', e => {
+        const p = posicao(e.clientX, e.clientY);
+        desenhando = true; ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    });
+    canvas.addEventListener('mousemove', e => {
+        if (!desenhando) return;
+        const p = posicao(e.clientX, e.clientY);
+        ctx.lineTo(p.x, p.y); ctx.stroke();
+    });
     canvas.addEventListener('mouseup',    () => desenhando = false);
     canvas.addEventListener('mouseleave', () => desenhando = false);
 
     canvas.addEventListener('touchstart', e => {
-        e.preventDefault(); const t = e.touches[0]; const r = canvas.getBoundingClientRect();
-        desenhando = true; ctx.beginPath(); ctx.moveTo(t.clientX-r.left, t.clientY-r.top);
+        e.preventDefault(); const t = e.touches[0];
+        const p = posicao(t.clientX, t.clientY);
+        desenhando = true; ctx.beginPath(); ctx.moveTo(p.x, p.y);
     }, { passive: false });
     canvas.addEventListener('touchmove', e => {
         e.preventDefault(); if (!desenhando) return;
-        const t = e.touches[0]; const r = canvas.getBoundingClientRect();
-        ctx.lineTo(t.clientX-r.left, t.clientY-r.top); ctx.stroke();
+        const t = e.touches[0];
+        const p = posicao(t.clientX, t.clientY);
+        ctx.lineTo(p.x, p.y); ctx.stroke();
     }, { passive: false });
     canvas.addEventListener('touchend', () => desenhando = false);
 }

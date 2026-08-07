@@ -62,7 +62,7 @@ def nova_oc():
 def listar_ocs():
     from models import OrdemCarregamento
 
-    status = request.args.get('status', 'todos')
+    status = request.args.get('status', 'em_andamento')
     page   = request.args.get('page', 1, type=int)
 
     # Admin vê tudo (incluindo excluídas)

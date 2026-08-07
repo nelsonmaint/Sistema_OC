@@ -17,7 +17,7 @@
     <!-- Resumo da balança inicial -->
     {% if pesagem_inicial %}
     <div class="alert alert-info">
-        <strong>Pesagem Inicial registrada:</strong> {{ pesagem_inicial }} kg
+        <strong>Pesagem Inicial registrada:</strong> {{ pesagem_inicial }} t
     </div>
     {% endif %}
 
@@ -25,9 +25,9 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         <div class="mb-3">
-            <label class="form-label fw-bold">Pesagem Final (kg)</label>
+            <label class="form-label fw-bold">Pesagem Final (t)</label>
             <input type="number" name="pesagem" class="form-control"
-                   step="0.01" min="0" placeholder="Ex: 26500.00" required>
+                   step="0.001" min="0" placeholder="Ex: 26.500" required>
         </div>
 
         <div class="mb-4">

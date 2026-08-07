@@ -170,7 +170,7 @@ def dashboard_gerencial():
             produto        = _campo_valor(e010.dados, 'produto')
             transportadora = _campo_valor(e010.dados, 'transportadora')
 
-        # Volume (t) = (pesagem_final - pesagem_inicial) / 1000
+        # Volume (t) = pesagem_final - pesagem_inicial (ambas já em toneladas)
         volume = None
         e070 = etapas_dict.get('070')
         e090 = etapas_dict.get('090')
@@ -179,8 +179,8 @@ def dashboard_gerencial():
             v090 = _campo_valor(e090.dados, 'pesagem_final')
             if v070 != '—' and v090 != '—':
                 try:
-                    vol_kg = float(v090) - float(v070)
-                    if vol_kg > 0: volume = round(vol_kg / 1000, 1)
+                    vol_t = float(v090) - float(v070)
+                    if vol_t > 0: volume = round(vol_t, 1)
                 except (ValueError, TypeError): pass
 
         # Status
@@ -336,7 +336,7 @@ def exportar_csv():
         'Número OC', 'Data Criação', 'Status', 'Motivo Cancelamento',
         'Produto', 'Cliente', 'Transportadora',
         'Placa Carreta', 'Placa Cavalo', 'Motorista',
-        'Pesagem Inicial (kg)', 'Pesagem Final (kg)', 'Volume (t)',
+        'Pesagem Inicial (t)', 'Pesagem Final (t)', 'Volume (t)',
         'Número NF', 'Número Ticket',
         'PCP (020) min',
         'LCQ Inicial (030) min',
@@ -387,12 +387,12 @@ def exportar_csv():
         else:
             status, motivo = 'Em Andamento', ''
 
-        # Volume em toneladas
+        # Volume em toneladas (pesagem_inicial/final já em toneladas)
         volume = ''
         try:
             pi = float(dados.get('pesagem_inicial','') or 0)
             pf = float(dados.get('pesagem_final','')   or 0)
-            if pf > pi: volume = round((pf - pi) / 1000, 1)
+            if pf > pi: volume = round(pf - pi, 1)
         except (ValueError, TypeError): pass
 
         # Espera entrada: intervalo entre fim do check-in (040) e início da liberação (050)

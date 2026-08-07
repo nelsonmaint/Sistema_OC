@@ -14,6 +14,22 @@ def iniciar_etapa(id, codigo):
     from models import EtapaOC
     if not checar_permissao(codigo): abort(403)
 
+    rotas = {
+        '020':'etapas.etapa_020','030':'etapas.etapa_030','040':'etapas.etapa_040',
+        '050':'etapas.etapa_050','060':'etapas.etapa_060','070':'etapas.etapa_070',
+        '080':'etapas.etapa_080','090':'etapas.etapa_090','100':'etapas.etapa_100',
+        '110':'etapas.etapa_110','120':'etapas.etapa_120',
+    }
+
+    # Idempotência: clique duplo, F5 ou duas abas na mesma OC não podem criar
+    # uma segunda linha para a mesma etapa (foi o que duplicou a etapa 060
+    # na OC00002). Se já existe, reaproveita em vez de criar outra.
+    etapa_existente = EtapaOC.query.filter_by(oc_id=id, codigo_etapa=codigo).first()
+    if etapa_existente:
+        if etapa_existente.fim is None and codigo in rotas:
+            return redirect(url_for(rotas[codigo], id=id))
+        return redirect(url_for('ocs.ver_oc', id=id))
+
     # 050 só pode iniciar depois do check-in (040) concluído
     if codigo == '050':
         e040 = EtapaOC.query.filter_by(oc_id=id, codigo_etapa='040').first()
@@ -29,12 +45,6 @@ def iniciar_etapa(id, codigo):
     etapa = EtapaOC(oc_id=id, codigo_etapa=codigo, usuario_id=current_user.id)
     db.session.add(etapa)
     db.session.commit()
-    rotas = {
-        '020':'etapas.etapa_020','030':'etapas.etapa_030','040':'etapas.etapa_040',
-        '050':'etapas.etapa_050','060':'etapas.etapa_060','070':'etapas.etapa_070',
-        '080':'etapas.etapa_080','090':'etapas.etapa_090','100':'etapas.etapa_100',
-        '110':'etapas.etapa_110','120':'etapas.etapa_120',
-    }
     if codigo in rotas:
         return redirect(url_for(rotas[codigo], id=id))
     return redirect(url_for('ocs.ver_oc', id=id))

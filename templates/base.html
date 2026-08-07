@@ -119,6 +119,16 @@
             border: 1px solid var(--border);
         }
 
+        /* ── Canvas de assinatura: encolhe pra caber na tela sem estourar ── */
+        canvas { max-width: 100%; height: auto; }
+
+        /* ── Telas pequenas (celular/tablet retrato) ── */
+        @media (max-width: 576px) {
+            .container { padding-left: 12px; padding-right: 12px; }
+            .container-box { padding: 16px; }
+            .topo-usuario { display: none; }
+        }
+
         /* ── Botões SIM / NÃO / N/A ── */
         .grupo-snia { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
         .btn-snia {
@@ -216,6 +226,21 @@
             border-top: 1px solid rgba(255,255,255,.1);
             padding: 8px 0; flex-shrink: 0;
         }
+
+        /* ── Rodapé (créditos) ── */
+        .rodape-creditos {
+            margin-top: 48px;
+            padding: 16px 0;
+            border-top: 1px solid var(--border);
+        }
+        .rodape-creditos-inner {
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px; flex-wrap: wrap;
+            opacity: .5; transition: opacity .2s;
+        }
+        .rodape-creditos-inner:hover { opacity: .85; }
+        .rodape-logo { height: 18px; width: auto; object-fit: contain; display: block; }
+        .rodape-divisor { width: 1px; height: 14px; background: var(--border); }
     </style>
 </head>
 <body>
@@ -292,6 +317,16 @@
     <div class="container-box">
         {% block content %}{% endblock %}
     </div>
+
+    <footer class="rodape-creditos">
+        <div class="rodape-creditos-inner">
+            <img src="{{ url_for('static', filename='img/chlorum-solutions.png') }}"
+                 class="rodape-logo" alt="Chlorum Solutions">
+            <div class="rodape-divisor"></div>
+            <img src="{{ url_for('static', filename='img/powered-by-nelson-silva.png') }}"
+                 class="rodape-logo" alt="Powered by Nelson Silva">
+        </div>
+    </footer>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
